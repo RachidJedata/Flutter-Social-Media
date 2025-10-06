@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_bubble/bubble_type.dart';
+// import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
-import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_3.dart';
+// import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_3.dart';
 import 'package:nurox_chat/components/text_time.dart';
 import 'package:nurox_chat/models/enum/message_type.dart';
 import 'package:timeago/timeago.dart' as timeago;

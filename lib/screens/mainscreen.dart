@@ -51,6 +51,11 @@ class _TabScreenState extends State<TabScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageTransitionSwitcher(
@@ -73,11 +78,26 @@ class _TabScreenState extends State<TabScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
+
+            // Use Dart's collection 'for' to iterate through the list
             for (Map item in pages)
-              item['index'] == 2
-                  ? buildFab()
-                  : Padding(
+              // Use Dart's collection 'if' and 'else if' for conditional widget inclusion
+              if (item['index'] == 2)
+                // If index is 2 (Home), return the Fab widget directly as the item
+                buildFab()
+              // Assuming this is inside the loop where item['index'] == 3:
+
+              else if (item['index'] == 3)
+                StreamBuilder<int>(
+                  stream:
+                      streamNumberOfNotifications(), // Use the stream function
+                  builder: (context, snapshot) {
+                    // 2. Extract the count. Use 0 if data isn't available or an error occurred.
+                    final int notificationCount = snapshot.data ?? 0;
+
+                    // The widget to display, regardless of the count (the icon itself)
+                    final notificationIcon = Padding(
                       padding: const EdgeInsets.only(top: 5.0),
                       child: IconButton(
                         icon: Icon(
@@ -91,8 +111,61 @@ class _TabScreenState extends State<TabScreen> {
                         ),
                         onPressed: () => navigationTapped(item['index']),
                       ),
+                    );
+
+                    // 3. Conditionally build the badge if the count is greater than 0
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        notificationIcon,
+                        // 4. Conditional Rendering based on the resolved Future data!
+                        if (notificationCount > 0)
+                          Positioned(
+                            right: 0,
+                            top: 5,
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              constraints: const BoxConstraints(
+                                minWidth: 12,
+                                minHeight: 12,
+                              ),
+                              child: Text(
+                                // Display the resolved number, converted to String
+                                notificationCount.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          )
+                      ],
+                    );
+                  },
+                )
+              else // Handle all other indices
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0),
+                  child: IconButton(
+                    icon: Icon(
+                      item['icon'],
+                      color: item['index'] != _page
+                          ? Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black
+                          : Theme.of(context).colorScheme.secondary,
+                      size: 25.0,
                     ),
-            SizedBox(width: 5),
+                    onPressed: () => navigationTapped(item['index']),
+                  ),
+                ),
+
+            const SizedBox(width: 5),
           ],
         ),
       ),
@@ -114,6 +187,17 @@ class _TabScreenState extends State<TabScreen> {
   void navigationTapped(int page) {
     setState(() {
       _page = page;
+    });
+  }
+
+  Stream<int> streamNumberOfNotifications() {
+    return notificationRef
+        .doc(firebaseAuth.currentUser!.uid)
+        .collection('notifications')
+        .snapshots() // 🌟 Get a stream of QuerySnapshots 🌟
+        .map((snapshot) {
+      // Map each new snapshot event to its document count (an int)
+      return snapshot.docs.length;
     });
   }
 }

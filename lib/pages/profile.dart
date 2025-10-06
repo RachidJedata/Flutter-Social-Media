@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:nurox_chat/auth/register/register.dart';
 import 'package:nurox_chat/components/stream_grid_wrapper.dart';
+import 'package:nurox_chat/landing/landing_page.dart';
 import 'package:nurox_chat/models/post.dart';
 import 'package:nurox_chat/models/user.dart';
 import 'package:nurox_chat/screens/edit_profile.dart';
@@ -70,9 +71,9 @@ class _ProfileState extends State<Profile> {
                     child: GestureDetector(
                       onTap: () async {
                         await firebaseAuth.signOut();
-                        Navigator.of(context).push(
+                        Navigator.of(context).pushReplacement(
                           CupertinoPageRoute(
-                            builder: (_) => Register(),
+                            builder: (_) => Landing(),
                           ),
                         );
                       },
@@ -168,15 +169,15 @@ class _ProfileState extends State<Profile> {
                                         SizedBox(height: 30.0),
                                       ],
                                     ),
-                                    widget.profileId == currentUserId()
-                                        ? Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 20.0),
-                                            child: Row(
-                                              children: [
-                                                buildProfileButton(user),
-                                                SizedBox(width: 10.0),
-                                                InkWell(
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 20.0),
+                                      child: Row(
+                                        children: [
+                                          buildProfileButton(user),
+                                          SizedBox(width: 10.0),
+                                          widget.profileId == currentUserId()
+                                              ? InkWell(
                                                   onTap: () {
                                                     Navigator.of(context).push(
                                                       CupertinoPageRoute(
@@ -185,19 +186,17 @@ class _ProfileState extends State<Profile> {
                                                       ),
                                                     );
                                                   },
-                                                  child: Row(children: [
-                                                    Icon(
-                                                      Ionicons.settings_outline,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .secondary,
-                                                    ),
-                                                  ]),
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        : const Text('')
+                                                  child: Icon(
+                                                    Ionicons.settings_outline,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
+                                                  ),
+                                                )
+                                              : SizedBox(width: 0.0),
+                                        ],
+                                      ),
+                                    ),
                                     // : buildLikeButton()
                                   ],
                                 ),

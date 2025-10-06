@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nurox_chat/chats/conversation.dart';
-import 'package:nurox_chat/components/text_time.dart';
+// import 'package:nurox_chat/components/text_time.dart';
 import 'package:nurox_chat/models/enum/message_type.dart';
 import 'package:nurox_chat/models/user.dart';
 import 'package:nurox_chat/utils/firebase.dart';

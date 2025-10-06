@@ -73,7 +73,7 @@ class _CreatePostState extends State<CreatePost> {
                 stream: usersRef.doc(currentUserId()).snapshots(),
                 builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                   if (snapshot.hasData && snapshot.data!.data() != null) {
-                    print("This test : " + snapshot.data!.data().toString());
+                    // print("This test : " + snapshot.data!.data().toString());
                     UserModel user = UserModel.fromJson(
                       snapshot.data!.data() as Map<String, dynamic>,
                     );

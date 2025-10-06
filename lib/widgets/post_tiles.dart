@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nurox_chat/models/post.dart';
 import 'package:nurox_chat/screens/view_image.dart';
-import 'package:nurox_chat/widgets/cached_image.dart';
 
 class PostTile extends StatefulWidget {
   final PostModel? post;
