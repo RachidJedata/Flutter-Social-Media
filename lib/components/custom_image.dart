@@ -17,14 +17,14 @@ class CustomImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: imageUrl ?? '',
-      errorWidget: (context, url, error) {
-        return Icon(Icons.error);
-      },
+    return Image.asset(
+      imageUrl ?? '',
       height: height,
-      fit: fit,
       width: width,
+      fit: fit,
+      errorBuilder: (context, error, stackTrace) {
+        return const Icon(Icons.error);
+      },
     );
   }
 }

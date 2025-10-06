@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nurox_chat/models/status.dart';
 import 'package:nurox_chat/models/user.dart';
@@ -13,60 +13,55 @@ class StoryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 100.0,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 5.0),
-        child: StreamBuilder<QuerySnapshot>(
-          stream: userChatsStream('${firebaseAuth.currentUser!.uid}'),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              List chatList = snapshot.data!.docs;
-              if (chatList.isNotEmpty) {
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 5.0),
-                  itemCount: chatList.length,
-                  scrollDirection: Axis.horizontal,
-                  physics: AlwaysScrollableScrollPhysics(),
-                  itemBuilder: (BuildContext context, int index) {
-                    DocumentSnapshot statusListSnapshot = chatList[index];
-                    return StreamBuilder<QuerySnapshot>(
-                      stream: messageListStream(statusListSnapshot.id),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          List statuses = snapshot.data!.docs;
-                          StatusModel status = StatusModel.fromJson(
-                            statuses.first.data(),
-                          );
-                          List users = statusListSnapshot.get('whoCanSee');
-                          // remove the current user's id from the Users
-                          // list so we can get the rest of the user's id
-                          users.remove('${firebaseAuth.currentUser!.uid}');
-                          return _buildStatusAvatar(
-                              statusListSnapshot.get('userId'),
-                              statusListSnapshot.id,
-                              status.statusId!,
-                              index);
-                        } else {
-                          return const SizedBox();
-                        }
-                      },
-                    );
-                  },
-                );
-              } else {
-                return Center(
-                  child: Text(
-                    'No Status',
-                  ),
-                );
-              }
-            } else {
-              return circularProgress(context);
-            }
-          },
-        ),
-      ),
+    return StreamBuilder<QuerySnapshot>(
+      stream: userChatsStream('${firebaseAuth.currentUser!.uid}'),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return circularProgress(context);
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          // 👇 Return nothing — zero space
+          return const SizedBox.shrink();
+        }
+
+        List chatList = snapshot.data!.docs;
+
+        return Container(
+          height: 100.0,
+          padding: const EdgeInsets.only(left: 5.0),
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 5.0),
+            itemCount: chatList.length,
+            scrollDirection: Axis.horizontal,
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemBuilder: (BuildContext context, int index) {
+              DocumentSnapshot statusListSnapshot = chatList[index];
+              return StreamBuilder<QuerySnapshot>(
+                stream: messageListStream(statusListSnapshot.id),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  List statuses = snapshot.data!.docs;
+                  StatusModel status =
+                      StatusModel.fromJson(statuses.first.data());
+                  List users = statusListSnapshot.get('whoCanSee');
+                  users.remove('${firebaseAuth.currentUser!.uid}');
+
+                  return _buildStatusAvatar(
+                    statusListSnapshot.get('userId'),
+                    statusListSnapshot.id,
+                    status.statusId!,
+                    index,
+                  );
+                },
+              );
+            },
+          ),
+        );
+      },
     );
   }
 

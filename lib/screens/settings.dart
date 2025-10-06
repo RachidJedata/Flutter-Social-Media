@@ -39,7 +39,7 @@ class _SettingState extends State<Setting> {
                   ),
                 ),
                 subtitle: Text(
-                  "A Fully Functional Social Media Application Made by CharlyKeleb",
+                  "A Fully Functional Social Media Application Made by ISIC Team",
                 ),
                 trailing: Icon(Icons.error)),
             Divider(),
@@ -57,7 +57,7 @@ class _SettingState extends State<Setting> {
                     notifier.toggleTheme();
                   },
                   value: notifier.dark,
-                  activeColor: Theme.of(context).colorScheme.secondary,
+                  activeTrackColor: Theme.of(context).colorScheme.secondary,
                 ),
               ),
             ),

@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,7 @@ import 'package:nurox_chat/models/post.dart';
 import 'package:nurox_chat/models/user.dart';
 import 'package:nurox_chat/services/post_service.dart';
 import 'package:nurox_chat/utils/firebase.dart';
-import 'package:nurox_chat/widgets/cached_image.dart';
+// import 'package:nurox_chat/widgets/cached_image.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class Comments extends StatefulWidget {
@@ -172,7 +172,7 @@ class _CommentsState extends State<Comments> {
         Container(
           height: 350.0,
           width: MediaQuery.of(context).size.width - 20.0,
-          child: cachedNetworkImage(widget.post!.mediaUrl!),
+          child: Image.asset(widget.post!.mediaUrl!),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -237,35 +237,6 @@ class _CommentsState extends State<Comments> {
       itemBuilder: (_, DocumentSnapshot snapshot) {
         CommentModel comments =
             CommentModel.fromJson(snapshot.data() as Map<String, dynamic>);
-        // return Column(
-        //   crossAxisAlignment: CrossAxisAlignment.start,
-        //   mainAxisAlignment: MainAxisAlignment.start,
-        //   children: [
-        //     ListTile(
-        //       contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
-        //       leading: CircleAvatar(
-        //         radius: 20.0,
-        //         backgroundImage: NetworkImage(comments.userDp!),
-        //       ),
-        //       title: Text(
-        //         comments.username!,
-        //         style: TextStyle(fontWeight: FontWeight.w700),
-        //       ),
-        //       subtitle: Text(
-        //         timeago.format(comments.timestamp!.toDate()),
-        //         style: TextStyle(fontSize: 12.0),
-        //       ),
-        //     ),
-        //     Padding(
-        //       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        //       child: Text(
-        //         comments.comment!,
-        //         style: TextStyle(fontWeight: FontWeight.w400),
-        //       ),
-        //     ),
-        //     Divider()
-        //   ],
-        // );
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Column(
@@ -278,7 +249,8 @@ class _CommentsState extends State<Comments> {
                 children: [
                   CircleAvatar(
                     radius: 20.0,
-                    backgroundImage: CachedNetworkImageProvider(comments.userDp!),
+                    backgroundImage: AssetImage(comments.userDp!),
+                    backgroundColor: Colors.transparent,
                   ),
                   SizedBox(width: 10.0),
                   Column(
@@ -301,8 +273,8 @@ class _CommentsState extends State<Comments> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 50.0),
-                child: Text( comments.comment!.trim()),
+                padding: const EdgeInsets.only(left: 60.0),
+                child: Text(comments.comment!.trim()),
               ),
               SizedBox(height: 10.0),
             ],

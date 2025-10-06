@@ -43,7 +43,7 @@ Future<void> createUserDocument(
     'photoUrl': Constants.avatarPlaceholder,
     'isOnline': false,
     'lastSeen': FieldValue.serverTimestamp(),
-    'bio': Cons,
+    'bio': Constants.defaultBio,
     'country': country ?? 'Morocco',
   });
 }

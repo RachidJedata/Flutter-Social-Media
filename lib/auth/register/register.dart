@@ -24,11 +24,18 @@ class _RegisterState extends State<Register> {
       progressIndicator: circularProgress(context),
       isLoading: viewModel.loading,
       child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading:
+              true, // enables the back arrow automatically
+          elevation: 0,
+          backgroundColor: Colors.transparent, // optional for a clean look
+          iconTheme: IconThemeData(color: Colors.black), // arrow color
+        ),
         key: viewModel.scaffoldKey,
         body: ListView(
           padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
           children: [
-            SizedBox(height: MediaQuery.of(context).size.height / 10),
+            SizedBox(height: MediaQuery.of(context).size.height / 27),
             Text(
               'Welcome to Wooble\nCreate a new account and connect with friends',
               style: GoogleFonts.nunitoSans(

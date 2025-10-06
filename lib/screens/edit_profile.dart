@@ -82,7 +82,8 @@ class _EditProfileState extends State<EditProfile> {
                           padding: const EdgeInsets.all(1.0),
                           child: CircleAvatar(
                             radius: 65.0,
-                            backgroundImage: NetworkImage(viewModel.imgLink!),
+                            backgroundImage: AssetImage(viewModel.imgLink!),
+                            backgroundColor: Colors.transparent,
                           ),
                         )
                       : viewModel.image == null
@@ -91,7 +92,8 @@ class _EditProfileState extends State<EditProfile> {
                               child: CircleAvatar(
                                 radius: 65.0,
                                 backgroundImage:
-                                    NetworkImage(widget.user!.photoUrl!),
+                                    AssetImage(widget.user!.photoUrl!),
+                                backgroundColor: Colors.transparent,
                               ),
                             )
                           : Padding(

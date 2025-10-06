@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nurox_chat/auth/login/login.dart';
+import 'package:nurox_chat/auth/register/register.dart';
 
 class Landing extends StatefulWidget {
   @override
@@ -49,7 +50,7 @@ class _LandingState extends State<Landing> {
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pushReplacement(
+                  Navigator.of(context).push(
                     CupertinoPageRoute(
                       builder: (_) => Login(),
                     ),
@@ -83,9 +84,9 @@ class _LandingState extends State<Landing> {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pushReplacement(
+                  Navigator.of(context).push(
                     CupertinoPageRoute(
-                      builder: (_) => Login(),
+                      builder: (_) => Register(),
                     ),
                   );
                 },

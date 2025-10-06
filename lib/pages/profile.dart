@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -194,30 +194,28 @@ class _ProfileState extends State<Profile> {
                                       ],
                                     ),
                                     widget.profileId == currentUserId()
-                                        ? InkWell(
-                                            onTap: () {
-                                              Navigator.of(context).push(
-                                                CupertinoPageRoute(
-                                                  builder: (_) => Setting(),
-                                                ),
-                                              );
-                                            },
-                                            child: Column(
-                                              children: [
-                                                Icon(
-                                                  Ionicons.settings_outline,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                ),
-                                                Text(
-                                                  'settings',
-                                                  style: TextStyle(
-                                                    fontSize: 11.5,
+                                        ? Row(
+                                            children: [
+                                              buildProfileButton(user),
+                                              SizedBox(width: 30.0),
+                                              InkWell(
+                                                onTap: () {
+                                                  Navigator.of(context).push(
+                                                    CupertinoPageRoute(
+                                                      builder: (_) => Setting(),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Row(children: [
+                                                  Icon(
+                                                    Ionicons.settings_outline,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
                                                   ),
-                                                )
-                                              ],
-                                            ),
+                                                ]),
+                                              ),
+                                            ],
                                           )
                                         : const Text('')
                                     // : buildLikeButton()
@@ -326,7 +324,7 @@ class _ProfileState extends State<Profile> {
                             ),
                           ),
                         ),
-                        buildProfileButton(user),
+                        // buildProfileButton(user),
                       ],
                     );
                   }
@@ -408,31 +406,37 @@ class _ProfileState extends State<Profile> {
   }
 
   buildProfileButton(user) {
-    //if isMe then display "edit profile"
     bool isMe = widget.profileId == firebaseAuth.currentUser!.uid;
+
     if (isMe) {
-      return buildButton(
-          text: "Edit Profile",
-          function: () {
-            Navigator.of(context).push(
-              CupertinoPageRoute(
-                builder: (_) => EditProfile(
-                  user: user,
-                ),
-              ),
-            );
-          });
-      //if you are already following the user then "unfollow"
-    } else if (isFollowing) {
-      return buildButton(
-        text: "Unfollow",
-        function: handleUnfollow,
+      // 🧍‍♂️ "Edit Profile" → Edit icon
+      return IconButton(
+        icon: Icon(
+          Icons.edit,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+        onPressed: () {
+          Navigator.of(context).push(
+            CupertinoPageRoute(
+              builder: (_) => EditProfile(user: user),
+            ),
+          );
+        },
+        tooltip: "Edit Profile",
       );
-      //if you are not following the user then "follow"
-    } else if (!isFollowing) {
-      return buildButton(
-        text: "Follow",
-        function: handleFollow,
+    } else if (isFollowing) {
+      // 👋 "Unfollow" → Person Remove icon
+      return IconButton(
+        icon: const Icon(Icons.person_remove, color: Colors.red),
+        onPressed: handleUnfollow,
+        tooltip: "Unfollow",
+      );
+    } else {
+      // ➕ "Follow" → Person Add icon
+      return IconButton(
+        icon: const Icon(Icons.person_add, color: Colors.green),
+        onPressed: handleFollow,
+        tooltip: "Follow",
       );
     }
   }
@@ -451,7 +455,7 @@ class _ProfileState extends State<Profile> {
               end: Alignment.bottomLeft,
               colors: [
                 Theme.of(context).colorScheme.secondary,
-                Color(0xff597FDB),
+                // Color(0xff597FDB),
               ],
             ),
           ),
@@ -588,7 +592,7 @@ class _ProfileState extends State<Profile> {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
+                    color: Colors.grey.withValues(alpha: 0.2),
                     spreadRadius: 3.0,
                     blurRadius: 5.0,
                   )

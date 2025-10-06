@@ -24,12 +24,19 @@ class _LoginState extends State<Login> {
       progressIndicator: circularProgress(context),
       isLoading: viewModel.loading,
       child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading:
+              true, // enables the back arrow automatically
+          elevation: 0,
+          backgroundColor: Colors.transparent, // optional for a clean look
+          iconTheme: IconThemeData(color: Colors.black), // arrow color
+        ),
         backgroundColor: Colors.white,
         key: viewModel.scaffoldKey,
         body: ListView(
           padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
           children: [
-            SizedBox(height: MediaQuery.of(context).size.height / 5),
+            SizedBox(height: MediaQuery.of(context).size.height / 15),
             Container(
               height: 170.0,
               width: MediaQuery.of(context).size.width,
@@ -116,7 +123,6 @@ class _LoginState extends State<Login> {
             textInputAction: TextInputAction.done,
             validateFunction: Validations.validatePassword,
             submitAction: () => viewModel.login(context),
-            obscureText: true,
             onSaved: (String val) {
               viewModel.setPassword(val);
             },

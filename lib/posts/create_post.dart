@@ -81,6 +81,7 @@ class _CreatePostState extends State<CreatePost> {
                       leading: CircleAvatar(
                         radius: 25.0,
                         backgroundImage: AssetImage(user.photoUrl!),
+                        backgroundColor: Colors.transparent,
                       ),
                       title: Text(
                         user.username!,

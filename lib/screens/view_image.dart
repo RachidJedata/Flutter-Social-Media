@@ -30,46 +30,51 @@ UserModel? user;
 class _ViewImageState extends State<ViewImage> {
   @override
   Widget build(BuildContext context) {
+    print("i am here now");
     return Scaffold(
       appBar: AppBar(),
-      body: Center(
-        child: buildImage(context),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        elevation: 0.0,
-        color: Colors.transparent,
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Container(
-            height: 50.0,
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: buildImage(context),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18.0),
+              child: SizedBox(
+                height: 80.0,
+                width: double.infinity,
+                child: Row(
                   children: [
-                    Text(
-                      widget.post!.username!,
-                      style: TextStyle(fontWeight: FontWeight.w800),
-                    ),
-                    SizedBox(height: 3.0),
-                    Row(
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Ionicons.alarm_outline, size: 13.0),
-                        SizedBox(width: 3.0),
                         Text(
-                          timeago.format(widget.post!.timestamp!.toDate()),
+                          widget.post!.username!,
+                          style: const TextStyle(fontWeight: FontWeight.w800),
+                        ),
+                        const SizedBox(height: 3.0),
+                        Row(
+                          children: [
+                            const Icon(Ionicons.alarm_outline, size: 13.0),
+                            const SizedBox(width: 3.0),
+                            Text(
+                              timeago.format(widget.post!.timestamp!.toDate()),
+                            ),
+                          ],
                         ),
                       ],
                     ),
+                    const Spacer(),
+                    buildLikeButton(),
                   ],
                 ),
-                Spacer(),
-                buildLikeButton(),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

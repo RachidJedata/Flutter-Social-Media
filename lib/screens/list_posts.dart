@@ -21,8 +21,8 @@ class ListPosts extends StatefulWidget {
 class _ListPostsState extends State<ListPosts> {
   @override
   Widget build(BuildContext context) {
-    print("i am here " + widget.userId);
-    print(widget.username);
+    // print("i am here " + widget.userId);
+    // print(widget.username);
 
     return Scaffold(
       appBar: AppBar(
