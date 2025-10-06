@@ -165,57 +165,37 @@ class _ProfileState extends State<Profile> {
                                             maxLines: null,
                                           ),
                                         ),
-                                        Container(
-                                          width: 130.0,
-                                          child: Text(
-                                            user.country!,
-                                            style: TextStyle(
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        SizedBox(width: 10.0),
-                                        Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              user.email!,
-                                              style: TextStyle(
-                                                fontSize: 10.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                        SizedBox(height: 30.0),
                                       ],
                                     ),
                                     widget.profileId == currentUserId()
-                                        ? Row(
-                                            children: [
-                                              buildProfileButton(user),
-                                              SizedBox(width: 30.0),
-                                              InkWell(
-                                                onTap: () {
-                                                  Navigator.of(context).push(
-                                                    CupertinoPageRoute(
-                                                      builder: (_) => Setting(),
+                                        ? Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 20.0),
+                                            child: Row(
+                                              children: [
+                                                buildProfileButton(user),
+                                                SizedBox(width: 10.0),
+                                                InkWell(
+                                                  onTap: () {
+                                                    Navigator.of(context).push(
+                                                      CupertinoPageRoute(
+                                                        builder: (_) =>
+                                                            Setting(),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: Row(children: [
+                                                    Icon(
+                                                      Ionicons.settings_outline,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
                                                     ),
-                                                  );
-                                                },
-                                                child: Row(children: [
-                                                  Icon(
-                                                    Ionicons.settings_outline,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary,
-                                                  ),
-                                                ]),
-                                              ),
-                                            ],
+                                                  ]),
+                                                ),
+                                              ],
+                                            ),
                                           )
                                         : const Text('')
                                     // : buildLikeButton()
@@ -226,7 +206,8 @@ class _ProfileState extends State<Profile> {
                           ],
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 10.0, left: 20.0),
+                          padding: const EdgeInsets.only(
+                              top: 10.0, left: 20.0, bottom: 10.0),
                           child: user.bio!.isEmpty
                               ? Container()
                               : Container(

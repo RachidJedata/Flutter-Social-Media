@@ -33,7 +33,7 @@ class FabContainer extends StatelessWidget {
           backgroundColor: Theme.of(context).primaryColor,
           child: Icon(
             icon,
-            color: Theme.of(context).colorScheme.secondary,
+            color: Colors.white,
           ),
           onPressed: () {
             chooseUpload(context, viewModel);
@@ -95,7 +95,6 @@ class FabContainer extends StatelessWidget {
                 onTap: () async {
                   // Navigator.pop(context);
                   await viewModel.pickImage(context: context);
-
                 },
               ),
             ],

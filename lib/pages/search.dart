@@ -1,12 +1,10 @@
-import 'dart:async';
-
-import 'package:cached_network_image/cached_network_image.dart';
+// import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ionicons/ionicons.dart';
+// import 'package:ionicons/ionicons.dart';
 import 'package:nurox_chat/chats/conversation.dart';
 import 'package:nurox_chat/models/user.dart';
 import 'package:nurox_chat/pages/profile.dart';
@@ -36,7 +34,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
     QuerySnapshot snap = await usersRef.get();
     List<DocumentSnapshot> doc = snap.docs;
     users = doc;
-    filteredUsers = doc;
+    filteredUsers = users.where((doc) => doc.id != currentUserId()).toList();
     setState(() {
       loading = false;
     });
@@ -44,15 +42,43 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
 
   search(String query) {
     if (query == "") {
-      filteredUsers = users;
-    } else {
-      List userSearch = users.where((userSnap) {
-        Map user = userSnap.data() as Map<String, dynamic>;
-        String userName = user['username'];
-        return userName.toLowerCase().contains(query.toLowerCase());
-      }).toList();
+      List<DocumentSnapshot> users_without_me =
+          users.where((doc) => doc.id != currentUserId()).toList();
       setState(() {
-        filteredUsers = userSearch as List<DocumentSnapshot<Object?>>;
+        filteredUsers = users_without_me;
+        print(filteredUsers);
+      });
+    } else {
+      List<DocumentSnapshot<Object?>> userSearch = users
+          // 1. Convert to a List of Maps for easier access and filtering.
+          //    We also exclude the current user's data right away.
+          .map((userSnap) {
+            // Safely cast the data to a Map<String, dynamic>
+            final user = userSnap.data() as Map<String, dynamic>;
+
+            // Store the snapshot and the map together to preserve the ID
+            return {'snap': userSnap, 'data': user};
+          })
+          // 2. Filter the results based on both the query and the current user ID.
+          .where((item) {
+            final user = item['data'] as Map<String, dynamic>;
+            final userSnap = item['snap'] as DocumentSnapshot;
+            final userName = user['username'] as String;
+
+            // EXCLUSION LOGIC: Skip if the user ID matches the current user's ID
+            if (userSnap.id == currentUserId()) {
+              return false;
+            }
+
+            // SEARCH LOGIC: Check if the username contains the query
+            return userName.toLowerCase().contains(query.toLowerCase());
+          })
+          // 3. Map back to the original DocumentSnapshot list for the final state.
+          .map((item) => item['snap'] as DocumentSnapshot)
+          .toList();
+
+      setState(() {
+        filteredUsers = userSearch;
       });
     }
   }
@@ -98,52 +124,82 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
     );
   }
 
-  buildSearch() {
+  Widget buildSearch() {
+    // Access theme colors
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Row(
       children: [
-        Container(
-          height: 30.0,
-          width: MediaQuery.of(context).size.width - 50,
-          decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0),
-            child: TextFormField(
-              controller: searchController,
-              textAlignVertical: TextAlignVertical.center,
-              maxLength: 10,
-              maxLengthEnforcement: MaxLengthEnforcement.enforced,
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(20),
-              ],
-              textCapitalization: TextCapitalization.sentences,
-              onChanged: (query) {
-                search(query);
-              },
-              decoration: InputDecoration(
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    searchController.clear();
-                  },
-                  child: Icon(
-                    Ionicons.close_outline,
-                    size: 12.0,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
+        Expanded(
+          child: Container(
+            // 1. Set the light background to secondaryContainer
+            decoration: BoxDecoration(
+              // Use secondaryContainer for a subtle, tinted fill
+              color: colorScheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(28.0), // Modern pill shape
+              // 2. Subtle shadow to lift the search bar
+              boxShadow: [
+                BoxShadow(
+                  // Use onSurface for shadow color, but with very low opacity
+                  color: colorScheme.onSurface.withValues(alpha: 0.08),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
-                // contentPadding: EdgeInsets.only(bottom: 10.0, left: 10.0),
-                border: InputBorder.none,
-                counterText: '',
-                hintText: 'Search...',
-                hintStyle: TextStyle(
-                  fontSize: 13.0,
+              ],
+            ),
+            child: SizedBox(
+              height: 48.0, // Defined height for a good visual presence
+              child: TextFormField(
+                controller: searchController,
+                // Style the input text using the appropriate theme color for contrast
+                style: TextStyle(
+                    color: colorScheme.onSecondaryContainer, fontSize: 16.0),
+                textAlignVertical: TextAlignVertical.center,
+                maxLength: 10,
+                maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(20),
+                ],
+                textCapitalization: TextCapitalization.sentences,
+                // Functionality is preserved
+                onChanged: (query) {
+                  search(query);
+                },
+                decoration: InputDecoration(
+                  // Add a prefix icon for clear communication
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: Icon(
+                      Icons.search,
+                      // Use onSecondaryContainer for clear visibility against the background
+                      color: colorScheme.onSecondaryContainer
+                          .withValues(alpha: 0.7),
+                      size: 20.0,
+                    ),
+                  ),
+                  // Padding for vertical alignment
+                  contentPadding: const EdgeInsets.symmetric(vertical: 14.0),
+                  border: InputBorder.none, // Hide default border
+                  counterText: '', // Hide character counter
+                  hintText: 'Search...',
+                  hintStyle: TextStyle(
+                    fontSize: 15.0,
+                    // Use a lower-emphasis color (onSurfaceVariant) for the hint text
+                    color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ),
           ),
         ),
+
+        // Provides space for other elements in the Row, if any.
+        const SizedBox(width: 10.0),
+
+        // Optional: Placeholder for a trailing button/icon if needed.
+        // Icon(Icons.mic, color: colorScheme.primary),
       ],
     );
   }
@@ -152,8 +208,13 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
     if (!loading) {
       if (filteredUsers.isEmpty) {
         return Center(
-          child: Text("No User Found",
-              style: TextStyle(fontWeight: FontWeight.bold),),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: Text(
+              "No User Found",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
         );
       } else {
         return Expanded(
@@ -164,13 +225,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
                 DocumentSnapshot doc = filteredUsers[index];
                 UserModel user =
                     UserModel.fromJson(doc.data() as Map<String, dynamic>);
-                if (doc.id == currentUserId()) {
-                  Timer(Duration(milliseconds: 500), () {
-                    setState(() {
-                      removeFromList(index);
-                    });
-                  });
-                }
+                // print("my user is " + user.id.toString());
                 return ListTile(
                   onTap: () => showProfile(context, profileId: user.id!),
                   leading: user.photoUrl!.isEmpty
@@ -191,9 +246,8 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
                         )
                       : CircleAvatar(
                           radius: 20.0,
-                          backgroundImage: CachedNetworkImageProvider(
-                            '${user.photoUrl}',
-                          ),
+                          backgroundColor: Colors.transparent,
+                          backgroundImage: AssetImage(user.photoUrl!),
                         ),
                   title: Text(
                     user.username!,
@@ -247,19 +301,16 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
                       height: 30.0,
                       width: 62.0,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary,
+                        // color: Theme.of(context).colorScheme.secondary,
                         borderRadius: BorderRadius.circular(3.0),
                       ),
                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.all(5.0),
-                          child: Text(
-                            'Message',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: Icon(
+                            Icons.send,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: 24.0, // A standard, readable icon size
                           ),
                         ),
                       ),

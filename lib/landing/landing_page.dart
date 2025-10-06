@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nurox_chat/auth/login/login.dart';
 import 'package:nurox_chat/auth/register/register.dart';
+import 'package:nurox_chat/utils/constants.dart';
 
 class Landing extends StatefulWidget {
   @override
@@ -66,8 +67,8 @@ class _LandingState extends State<Landing> {
                       begin: Alignment.topRight,
                       end: Alignment.bottomLeft,
                       colors: [
-                        Theme.of(context).colorScheme.secondary,
-                        Color(0xff597FDB),
+                        Theme.of(context).primaryColor,
+                        Constants.greenMid,
                       ],
                     ),
                   ),
@@ -95,13 +96,13 @@ class _LandingState extends State<Landing> {
                   width: 130.0,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(40.0),
-                    border: Border.all(color: Colors.white),
+                    border: Border.all(color: Theme.of(context).primaryColor),
                     gradient: LinearGradient(
                       begin: Alignment.topRight,
                       end: Alignment.bottomLeft,
                       colors: [
-                        Theme.of(context).colorScheme.secondary,
-                        Color(0xff597FDB),
+                        Theme.of(context).primaryColor,
+                        Constants.greenMid,
                       ],
                     ),
                   ),

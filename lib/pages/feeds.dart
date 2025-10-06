@@ -55,6 +55,7 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
           IconButton(
             icon: Icon(
               Ionicons.chatbubble_ellipses,
+              color: Theme.of(context).primaryColor,
               size: 30.0,
             ),
             onPressed: () {

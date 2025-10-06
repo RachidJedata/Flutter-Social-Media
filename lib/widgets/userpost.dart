@@ -148,8 +148,10 @@ class UserPost extends StatelessWidget {
                             child: Text(
                               '${post?.description ?? ""}',
                               style: TextStyle(
-                                color:
-                                    Theme.of(context).textTheme.bodySmall!.color,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .color,
                                 fontSize: 15.0,
                               ),
                               maxLines: 2,
@@ -346,9 +348,8 @@ class UserPost extends StatelessWidget {
                               )
                             : CircleAvatar(
                                 radius: 20.0,
-                                backgroundImage: CachedNetworkImageProvider(
-                                  '${user.photoUrl}',
-                                ),
+                                backgroundImage: AssetImage(user.photoUrl!),
+                                backgroundColor: Colors.transparent,
                               ),
                         SizedBox(width: 5.0),
                         Column(

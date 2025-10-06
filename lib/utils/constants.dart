@@ -10,7 +10,7 @@ class Constants {
 
   // 🌿 Green gradient base colors
   static Color greenLight1 = const Color(0xFFB2F7EF);
-  static Color greenLight2 = const Color(0xFF7AE582);
+  static Color greenLight2 = const Color.fromARGB(255, 126, 238, 134);
   static Color greenMid = const Color(0xFF2DC653);
   static Color greenDark1 = const Color(0xFF0EAD69);
   static Color greenDark2 = const Color(0xFF064635);
@@ -45,6 +45,7 @@ class Constants {
       surface: lightBG,
       primary: greenMid,
       secondary: greenDark1,
+      secondaryContainer: greenLight2,
     ),
     iconTheme: IconThemeData(color: greenMid),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -75,6 +76,7 @@ class Constants {
       background: darkBG,
       surface: darkBG,
       primary: greenMid,
+      secondaryContainer: greenDark2,
       secondary: greenDark1,
       brightness: Brightness.dark,
     ),
