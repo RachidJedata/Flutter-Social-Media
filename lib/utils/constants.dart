@@ -7,6 +7,7 @@ class Constants {
 
   static String avatarPlaceholder = 'assets/images/avatar.png';
   static String defaultBio = 'Hello there! I am using Raja Chat.';
+  static String defaultImage = 'assets/images/login.png';
 
   // 🌿 Green gradient base colors
   static Color greenLight1 = const Color(0xFFB2F7EF);

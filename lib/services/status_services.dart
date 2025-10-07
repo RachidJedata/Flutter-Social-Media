@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nurox_chat/models/status.dart';
@@ -18,31 +18,23 @@ class StatusService {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
-  sendStatus(StatusModel status, String chatId) async {
-    //will send message to chats collection with the usersId
-    await statusRef
-        .doc("$chatId")
-        .collection("statuses")
-        .doc(status.statusId)
-        .set(status.toJson());
-    //will update "lastTextTime" to the last time a text was sent
-    await statusRef.doc("$chatId").update({
-      "userId": firebaseAuth.currentUser!.uid,
-    });
-  }
+  Future<String> sendStatus(StatusModel status) async {
+    // Get all user IDs
+    final snapshot = await usersRef.get();
+    final ids = snapshot.docs.map((doc) => doc.get('uid') as String).toList();
 
-  Future<String> sendFirstStatus(StatusModel status) async {
-    List<String> ids = [];
-    await usersRef.get().then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((DocumentSnapshot documentSnapshot) {
-        ids.add(documentSnapshot.get('id'));
-      });
-    });
-    User? user = firebaseAuth.currentUser;
-    DocumentReference ref = await statusRef.add({
+    // Create a new status document
+    final ref = statusRef.doc(); // create a doc with a generated ID
+
+    // Save the full status data
+    await ref.set({
+      ...status.toJson(),
+      'statusId': ref.id, // optional: store its own ID
       'whoCanSee': ids,
+      'userId': firebaseAuth.currentUser!.uid,
+      'createdAt': FieldValue.serverTimestamp(),
     });
-    await sendStatus(status, ref.id);
+    // Return the new document ID
     return ref.id;
   }
 
@@ -54,4 +46,6 @@ class StatusService {
     String imageUrl = await storageReference.getDownloadURL();
     return imageUrl;
   }
+
+
 }

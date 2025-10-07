@@ -74,56 +74,54 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
         color: Theme.of(context).colorScheme.secondary,
         onRefresh: () =>
             postRef.orderBy('timestamp', descending: true).limit(page).get(),
-        child: SingleChildScrollView(
-          // controller: scrollController,
-          physics: NeverScrollableScrollPhysics(),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              StoryWidget(),
-              Container(
-                height: MediaQuery.of(context).size.height,
-                child: FutureBuilder(
-                  future: postRef
-                      .orderBy('timestamp', descending: true)
-                      .limit(page)
-                      .get(),
-                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      var snap = snapshot.data;
-                      List docs = snap!.docs;
-                      return ListView.builder(
-                        controller: scrollController,
-                        itemCount: docs.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          PostModel posts =
-                              PostModel.fromJson(docs[index].data());
-                          return Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: UserPost(post: posts),
-                          );
-                        },
-                      );
-                    } else if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return circularProgress(context);
-                    } else
-                      return Center(
-                        child: Text(
-                          'No Feeds',
-                          style: TextStyle(
-                            fontSize: 26.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      );
-                  },
+        child: FutureBuilder(
+          future:
+              postRef.orderBy('timestamp', descending: true).limit(page).get(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasData) {
+              var snap = snapshot.data;
+              List docs = snap!.docs;
+
+              // *** This is the MAIN scrollable widget. ***
+              return ListView.builder(
+                // Use the scrollController here for infinite scrolling logic
+                controller: scrollController,
+
+                // Add 1 for the StoryWidget at the top
+                itemCount: docs.length + 1,
+
+                itemBuilder: (context, index) {
+                  // *** Handle the StoryWidget at index 0 ***
+                  if (index == 0) {
+                    return StoryWidget();
+                  }
+
+                  // *** Handle the Posts for index > 0 ***
+                  int postIndex =
+                      index - 1; // Adjust index for the list of posts
+                  PostModel posts = PostModel.fromJson(docs[postIndex].data());
+
+                  return Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: UserPost(post: posts),
+                  );
+                },
+              );
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              // Show loading indicator in the center while waiting
+              return Center(child: circularProgress(context));
+            } else {
+              return Center(
+                child: Text(
+                  'No Feeds',
+                  style: TextStyle(
+                    fontSize: 26.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              );
+            }
+          },
         ),
       ),
     );

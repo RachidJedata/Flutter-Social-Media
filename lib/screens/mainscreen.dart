@@ -80,13 +80,10 @@ class _TabScreenState extends State<TabScreen> {
           children: [
             const SizedBox(width: 5),
 
-            // Use Dart's collection 'for' to iterate through the list
             for (Map item in pages)
-              // Use Dart's collection 'if' and 'else if' for conditional widget inclusion
               if (item['index'] == 2)
                 // If index is 2 (Home), return the Fab widget directly as the item
                 buildFab()
-              // Assuming this is inside the loop where item['index'] == 3:
 
               else if (item['index'] == 3)
                 StreamBuilder<int>(

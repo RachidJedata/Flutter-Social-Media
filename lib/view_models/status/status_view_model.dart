@@ -1,37 +1,31 @@
 import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:nurox_chat/models/message.dart';
+
 import 'package:nurox_chat/models/status.dart';
-import 'package:nurox_chat/models/story_model.dart';
-import 'package:nurox_chat/models/user.dart';
 import 'package:nurox_chat/posts/story/confrim_status.dart';
-import 'package:nurox_chat/services/post_service.dart';
+import 'package:nurox_chat/services/ImagePickerService.dart';
 import 'package:nurox_chat/services/status_services.dart';
 import 'package:nurox_chat/services/user_service.dart';
 import 'package:nurox_chat/utils/constants.dart';
-import 'package:nurox_chat/utils/firebase.dart';
+import 'package:flutter/cupertino.dart';
 
 class StatusViewModel extends ChangeNotifier {
-  //Services
+  // Services
   UserService userService = UserService();
-  PostService postService = PostService();
   StatusService statusService = StatusService();
+  final ImagePickerService _imagePickerService = ImagePickerService();
 
-  //Keys
+  // Keys
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  //Variables
+  // Variables
   bool loading = false;
   String? username;
-  File? mediaUrl;
-  final picker = ImagePicker();
+  File? mediaUrl; // Holds the local image file
   String? description;
   String? email;
   String? userDp;
@@ -40,7 +34,7 @@ class StatusViewModel extends ChangeNotifier {
   bool edit = false;
   String? id;
 
-  //integers
+  // integers
   int pageIndex = 0;
 
   setDescription(String val) {
@@ -49,16 +43,33 @@ class StatusViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  //Functions
-  //Functions
-  pickImage({bool camera = false, BuildContext? context}) async {
+  // Functions
+  Future<void> pickImage({bool camera = false, BuildContext? context}) async {
+    // Changed return type to void
     loading = true;
     notifyListeners();
+
+    if (context == null) return; // Null safety check for context
+
     try {
-      PickedFile? pickedFile = await picker.getImage(
-        source: camera ? ImageSource.camera : ImageSource.gallery,
-      );
-      // 1. Define the presets once for cleaner code
+      File? pickedFile;
+
+      // ✅ DELEGATE IMAGE PICKING TO THE SERVICE
+      if (camera) {
+        pickedFile = await _imagePickerService.pickImageFromCamera();
+      } else {
+        pickedFile = await _imagePickerService.pickImageFromGallery();
+      }
+
+      // 1. CHECK IF SELECTION WAS CANCELLED
+      if (pickedFile == null) {
+        loading = false;
+        notifyListeners();
+        showInSnackBar('Selection Cancelled', context);
+        return;
+      }
+
+      // 2. Define the presets once for cleaner code
       final List<CropAspectRatioPreset> presets = [
         CropAspectRatioPreset.square,
         CropAspectRatioPreset.ratio3x2,
@@ -67,62 +78,62 @@ class StatusViewModel extends ChangeNotifier {
         CropAspectRatioPreset.ratio16x9
       ];
 
+      // 3. Perform Cropping
       CroppedFile? croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile!.path,
-        // ❌ REMOVED: aspectRatioPresets: [...]
-        // This top-level argument caused the "isn't defined" error.
+        sourcePath: pickedFile.path, // Use the path from the File object
+        compressQuality: 80, // Recommended for efficiency
 
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: 'Crop Image',
-            toolbarColor: Constants.lightAccent,
+            toolbarColor:
+                Constants.lightAccent, // Assuming Constants is defined
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false,
-
-            // ✅ CORRECTED: aspectRatioPresets is now inside AndroidUiSettings
-            aspectRatioPresets: presets,
+            aspectRatioPresets: presets, // Correct placement
           ),
-
           IOSUiSettings(
-            title: 'Crop Image', // Added a title for better user experience on iOS
+            title: 'Crop Image',
             minimumAspectRatio: 1.0,
-
-            // ✅ CORRECTED: aspectRatioPresets is now inside IOSUiSettings
-            aspectRatioPresets: presets,
+            aspectRatioPresets: presets, // Correct placement
           ),
         ],
       );
-      mediaUrl = File(croppedFile!.path);
-      loading = false;
-      Navigator.of(context!).push(
-        CupertinoPageRoute(
-          builder: (_) => ConfirmStatus(),
-        ),
-      );
-      notifyListeners();
+
+      // 4. Update State and Navigate
+      if (croppedFile != null) {
+        mediaUrl = File(croppedFile.path); // Store the final cropped file
+
+        loading = false;
+        notifyListeners(); // Notify UI to update loading state and show image
+
+        // Navigate to ConfirmStatus screen
+        Navigator.of(context).push(
+          CupertinoPageRoute(
+            builder: (_) => ConfirmStatus(),
+          ),
+        );
+      } else {
+        // Cropping cancelled
+        loading = false;
+        notifyListeners();
+        showInSnackBar('Cropping Cancelled', context);
+      }
     } catch (e) {
+      // 5. Catch and Handle Errors
+      print('Image Picking/Cropping Error: $e');
       loading = false;
       notifyListeners();
-      showInSnackBar('Cancelled', context);
+      showInSnackBar('An error occurred. Check permissions.', context);
     }
   }
 
-  //send message
-  sendStatus(String chatId, StatusModel message) {
-    statusService.sendStatus(
-      message,
-      chatId,
-    );
-  }
-
-  //send the first message
-  Future<String> sendFirstStatus(StatusModel message) async {
-    String newChatId = await statusService.sendFirstStatus(
+  // send message
+  sendStatus(StatusModel message) {
+    return statusService.sendStatus(
       message,
     );
-
-    return newChatId;
   }
 
   resetPost() {

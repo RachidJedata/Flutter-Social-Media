@@ -59,7 +59,8 @@ class _ProfilePictureState extends State<ProfilePicture> {
                               child: Text(
                                 'Tap to add your profile picture',
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.secondary,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
                                 ),
                               ),
                             )
@@ -127,7 +128,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                 title: Text('Camera'),
                 onTap: () {
                   Navigator.pop(context);
-                  viewModel.pickImage(camera: true);
+                  viewModel.fetchImageFromCamera();
                 },
               ),
               ListTile(
@@ -135,7 +136,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                 title: Text('Gallery'),
                 onTap: () {
                   Navigator.pop(context);
-                  viewModel.pickImage();
+                  viewModel.fetchImageFromGallery();
                   // viewModel.pickProfilePicture();
                 },
               ),

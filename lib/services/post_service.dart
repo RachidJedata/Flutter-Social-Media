@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nurox_chat/models/user.dart';
 import 'package:nurox_chat/screens/view_image.dart';
 import 'package:nurox_chat/services/services.dart';
+import 'package:nurox_chat/utils/constants.dart';
 import 'package:nurox_chat/utils/firebase.dart';
 import 'package:uuid/uuid.dart';
 
@@ -22,8 +23,7 @@ class PostService extends Service {
 
 //uploads post to the post collection
   uploadPost(String location, String description, File? image) async {
-    // print("i am here");
-    String link = "assets/images/login.png";
+    String link = Constants.defaultImage;
 
     if (image != null) link = await uploadImage(posts, image);
 

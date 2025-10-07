@@ -8,6 +8,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nurox_chat/models/post.dart';
 import 'package:nurox_chat/screens/mainscreen.dart';
+import 'package:nurox_chat/services/ImagePickerService.dart';
 import 'package:nurox_chat/services/post_service.dart';
 import 'package:nurox_chat/services/user_service.dart';
 import 'package:nurox_chat/utils/constants.dart';
@@ -25,7 +26,7 @@ class PostsViewModel extends ChangeNotifier {
   //Variables
   bool loading = false;
   String? username;
-  File? mediaUrl;
+  // File? mediaUrl;
   final picker = ImagePicker();
   String? location;
   Position? position;
@@ -44,6 +45,33 @@ class PostsViewModel extends ChangeNotifier {
 
   //controllers
   TextEditingController locationTEC = TextEditingController();
+
+  final ImagePickerService _imagePickerService = ImagePickerService();
+
+  File? _mediaUrl; // This will store the File for local display
+  File? get mediaUrl => _mediaUrl;
+
+  // 2. Methods to fetch and save the image
+  Future<void> fetchImageFromGallery() async {
+    // Call the service class method
+    final File? imageFile = await _imagePickerService.pickImageFromGallery();
+
+    if (imageFile != null) {
+      _mediaUrl = imageFile;
+      imgLink = null; // Clear remote link when a new local file is picked
+      notifyListeners(); // Notify UI to rebuild and show the new image
+    }
+  }
+
+  Future<void> fetchImageFromCamera() async {
+    final File? imageFile = await _imagePickerService.pickImageFromCamera();
+
+    if (imageFile != null) {
+      _mediaUrl = imageFile;
+      imgLink = null;
+      notifyListeners();
+    }
+  }
 
   //Setters
   setEdit(bool val) {
@@ -90,69 +118,6 @@ class PostsViewModel extends ChangeNotifier {
   }
 
   //Functions
-  pickImage({bool camera = false, BuildContext? context}) async {
-    loading = true;
-    notifyListeners();
-    try {
-      PickedFile? pickedFile = await picker.getImage(
-        source: camera ? ImageSource.camera : ImageSource.gallery,
-      );
-      // 1. Define the presets once
-      final presets = [
-        CropAspectRatioPreset.square,
-        CropAspectRatioPreset.ratio3x2,
-        CropAspectRatioPreset.original,
-        CropAspectRatioPreset.ratio4x3,
-        CropAspectRatioPreset.ratio16x9
-      ];
-
-      CroppedFile? croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile!.path,
-        // ❌ REMOVED: aspectRatioPresets as a direct argument is no longer defined.
-
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: 'Crop Image',
-            toolbarColor: Constants.lightAccent,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false,
-
-            // ✅ ADDED: The aspectRatioPresets are now inside AndroidUiSettings
-            aspectRatioPresets: presets,
-          ),
-
-          IOSUiSettings(
-            title: 'Crop Image', // Add a title for iOS
-            minimumAspectRatio: 1.0,
-
-            // ✅ ADDED: The aspectRatioPresets are now inside IOSUiSettings
-            aspectRatioPresets: presets,
-          ),
-
-          // 🌐 OPTIONAL: Add WebUiSettings if targeting the web platform
-          /*
-    WebUiSettings(
-      context: context, // Requires a BuildContext
-      presentStyle: WebPresentStyle.dialog,
-      boundary: const CropperBoundary(
-        width: 520,
-        height: 520,
-      ),
-    ),
-    */
-        ],
-      );
-      mediaUrl = File(croppedFile!.path);
-      loading = false;
-      notifyListeners();
-    } catch (e) {
-      loading = false;
-      notifyListeners();
-      showInSnackBar('Cancelled', context);
-    }
-  }
-
   getLocation() async {
     loading = true;
     notifyListeners();
@@ -218,7 +183,7 @@ class PostsViewModel extends ChangeNotifier {
   }
 
   resetPost() {
-    mediaUrl = null;
+    _mediaUrl = null;
     description = null;
     location = null;
     edit = false;

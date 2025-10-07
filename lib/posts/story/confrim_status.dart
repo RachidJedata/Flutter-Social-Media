@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart'; // Import for Firebase Storage
 import 'package:flutter/material.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:nurox_chat/utils/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:nurox_chat/models/enum/message_type.dart';
 import 'package:nurox_chat/models/status.dart';
-import 'package:nurox_chat/utils/firebase.dart';
+import 'package:nurox_chat/utils/firebase.dart'; // Contains statusRef, firebaseAuth, uuid, storage/firebaseStorage
 import 'package:nurox_chat/view_models/status/status_view_model.dart';
 import 'package:nurox_chat/widgets/indicators.dart';
 
@@ -17,6 +18,7 @@ class ConfirmStatus extends StatefulWidget {
 }
 
 class _ConfirmStatusState extends State<ConfirmStatus> {
+  // Use StatefulWidget's loading state only for the overlay
   bool loading = false;
 
   @override
@@ -37,33 +39,38 @@ class _ConfirmStatusState extends State<ConfirmStatus> {
         elevation: 10.0,
         child: Container(
           constraints: BoxConstraints(maxHeight: 100.0),
-          child: Flexible(
-            child: TextFormField(
-              style: TextStyle(
-                fontSize: 15.0,
-                color: Theme.of(context).textTheme.titleLarge!.color,
-              ),
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(10.0),
-                enabledBorder: InputBorder.none,
-                border: InputBorder.none,
-                hintText: "Type your caption",
-                hintStyle: TextStyle(
-                  color: Theme.of(context).textTheme.titleLarge!.color,
+          child: Row(
+            children: [
+              Flexible(
+                child: TextFormField(
+                  style: TextStyle(
+                    fontSize: 15.0,
+                    color: Theme.of(context).textTheme.titleLarge!.color,
+                  ),
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.all(10.0),
+                    enabledBorder: InputBorder.none,
+                    border: InputBorder.none,
+                    hintText: "Type your caption",
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).textTheme.titleLarge!.color,
+                    ),
+                  ),
+                  onSaved: (val) {
+                    if (val != null) viewModel.setDescription(val);
+                  },
+                  onChanged: (val) {
+                    viewModel.setDescription(val);
+                  },
+                  maxLines: null,
                 ),
               ),
-              onSaved: (val) {
-                viewModel.setDescription(val!);
-              },
-              onChanged: (val) {
-                viewModel.setDescription(val);
-              },
-              maxLines: null,
-            ),
+            ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         child: const Icon(
           Icons.done,
           color: Colors.white,
@@ -72,55 +79,71 @@ class _ConfirmStatusState extends State<ConfirmStatus> {
           setState(() {
             loading = true;
           });
-          //check if a user has uploaded a status
-          QuerySnapshot snapshot = await statusRef
-              .where('userId', isEqualTo: firebaseAuth.currentUser!.uid)
-              .get();
-          if (snapshot.docs.isNotEmpty) {
-            List chatList = snapshot.docs;
-            DocumentSnapshot chatListSnapshot = chatList[0];
-            String url = await uploadMedia(viewModel.mediaUrl!);
+
+          try {
+            // Get the image URL (in real app but for me , i haven't activated storage so i can't use it)
+            // String url = await uploadMedia(viewModel.mediaUrl!);
+            String url = Constants.defaultImage;
+
             StatusModel message = StatusModel(
               url: url,
               caption: viewModel.description,
               type: MessageType.IMAGE,
-              time: Timestamp.now(),
-              statusId: uuid.v1(),
               viewers: [],
             );
-            await viewModel.sendStatus(chatListSnapshot.id, message);
+
+            String refId = await viewModel.sendStatus(message);
+
+            print('Status uploaded with ID: $refId');
+
+            // Success: Turn off loading and navigate back
             setState(() {
               loading = false;
             });
+
             Navigator.pop(context);
-          } else {
-            String url = await uploadMedia(viewModel.mediaUrl!);
-            StatusModel message = StatusModel(
-              url: url,
-              caption: viewModel.description,
-              type: MessageType.IMAGE,
-              time: Timestamp.now(),
-              statusId: uuid.v1(),
-              viewers: [],
-            );
-            String id = await viewModel.sendFirstStatus(message);
-            await viewModel.sendStatus(id, message);
+            Navigator.pop(context);
+          } catch (e) {
+            // Failure: Turn off loading and show error
+            print('Error during status upload: $e');
             setState(() {
               loading = false;
             });
-            Navigator.pop(context);
           }
         },
       ),
     );
   }
 
+// Inside _ConfirmStatusState in confirm_status.dart
+
   Future<String> uploadMedia(File image) async {
+    // 1. Create a unique, clear path for the image
+    String fileName = '${uuid.v1()}_${uuid.v4()}'; // Create a unique filename
+
+    // 2. Define the storage reference
+    // Use the storage instance to get the root reference, then define the path.
     Reference storageReference =
-        storage.ref().child("status").child(uuid.v1()).child(uuid.v4());
-    UploadTask uploadTask = storageReference.putFile(image);
-    await uploadTask.whenComplete(() => null);
-    String imageUrl = await storageReference.getDownloadURL();
-    return imageUrl;
+        statuses.child(fileName); // Reference the file directly
+
+    // 3. Create and await the UploadTask
+    try {
+      UploadTask uploadTask = storageReference.putFile(image);
+
+      // Await the task completion and get the snapshot
+      // TaskSnapshot provides the reliable result of the upload.
+      TaskSnapshot snapshot = await uploadTask;
+
+      // 4. Get the download URL
+      String imageUrl = await snapshot.ref.getDownloadURL();
+      return imageUrl;
+    } on FirebaseException catch (e) {
+      // Log the specific Firebase Storage error
+      print('Firebase Storage Error during upload: ${e.code} - ${e.message}');
+
+      // Re-throw or handle as needed, but this prevents the function from returning
+      // a successful URL path when the upload actually failed.
+      throw Exception('Failed to upload media: ${e.message}');
+    }
   }
 }

@@ -325,7 +325,7 @@ class _ConversationState extends State<Conversation> {
 
   sendMessage(ConversationViewModel viewModel, var user,
       {bool isImage = false, int? imageType}) async {
-    String msg;
+    String? msg;
     if (isImage) {
       msg = await viewModel.pickImage(
         source: imageType!,
@@ -344,7 +344,7 @@ class _ConversationState extends State<Conversation> {
       time: Timestamp.now(),
     );
 
-    if (msg.isNotEmpty) {
+    if ((msg ?? '').isEmpty) {
       if (isFirst) {
         print("FIRST");
         String id = await viewModel.sendFirstMessage(widget.userId, message);

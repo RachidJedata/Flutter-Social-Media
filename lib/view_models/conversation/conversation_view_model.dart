@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:image_picker/image_picker.dart'; // Still needed for constants/types
+// Assuming ImagePickerService is available here if you want to use it
+// import 'package:nurox_chat/services/image_picker_service.dart';
 import 'package:nurox_chat/models/message.dart';
 import 'package:nurox_chat/services/chat_service.dart';
 
@@ -11,7 +13,11 @@ class ConversationViewModel extends ChangeNotifier {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   ChatService chatService = ChatService();
   bool uploadingImage = false;
-  final picker = ImagePicker();
+
+  // ✅ NEW: Use a local instance of ImagePicker for simplicity in this small class,
+  // but use the correct methods.
+  final ImagePicker _picker = ImagePicker();
+
   File? image;
 
   sendMessage(String chatId, Message message) {
@@ -38,17 +44,28 @@ class ConversationViewModel extends ChangeNotifier {
     chatService.setUserTyping(chatId, user, typing);
   }
 
-  pickImage({int? source, BuildContext? context, String? chatId}) async {
-    PickedFile? pickedFile = source == 0
-        ? await picker.getImage(
+  // ✅ CORRECTED: Changed the return type to Future<String?>
+  // and updated image picker usage.
+  Future<String?> pickImage(
+      {int? source, BuildContext? context, String? chatId}) async {
+    // 1. Validate required arguments
+    if (context == null || chatId == null) return null;
+
+    // ✅ NEW: Use XFile? instead of PickedFile?
+    XFile? pickedFile = source == 0
+        ? await _picker.pickImage(
+            // ✅ CORRECTED: Use pickImage for camera
             source: ImageSource.camera,
+            imageQuality: 80, // Recommended
           )
-        : await picker.getImage(
+        : await _picker.pickImage(
+            // ✅ CORRECTED: Use pickImage for gallery
             source: ImageSource.gallery,
+            imageQuality: 80, // Recommended
           );
 
     if (pickedFile != null) {
-      // Define the presets outside to keep the code clean
+      // 2. Define the presets
       final List<CropAspectRatioPreset> presets = [
         CropAspectRatioPreset.square,
         CropAspectRatioPreset.ratio3x2,
@@ -57,44 +74,66 @@ class ConversationViewModel extends ChangeNotifier {
         CropAspectRatioPreset.ratio16x9
       ];
 
+      // Convert XFile to File for ImageCropper's sourcePath
+      File imageFile = File(pickedFile.path);
+
+      // 3. Perform Cropping
       CroppedFile? croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile.path,
-        // ❌ REMOVED: aspectRatioPresets: [...]
-        // This line caused the error in newer versions.
+        sourcePath: imageFile.path, // Use the path from the new File object
 
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: 'Crop image',
-            toolbarColor: Theme.of(context!).appBarTheme.backgroundColor,
+            // Ensure Theme.of(context!) is safe by checking for null context above
+            toolbarColor: Theme.of(context).appBarTheme.backgroundColor,
             toolbarWidgetColor: Theme.of(context).iconTheme.color,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false,
 
-            // ✅ CORRECTED: aspectRatioPresets is now inside AndroidUiSettings
+            // ✅ CORRECTED: aspectRatioPresets is inside AndroidUiSettings
             aspectRatioPresets: presets,
           ),
-
           IOSUiSettings(
-            title: 'Crop image', // Added title for iOS dialog
+            title: 'Crop image',
             minimumAspectRatio: 1.0,
 
-            // ✅ CORRECTED: aspectRatioPresets is now inside IOSUiSettings
+            // ✅ CORRECTED: aspectRatioPresets is inside IOSUiSettings
             aspectRatioPresets: presets,
           ),
         ],
       );
 
-      Navigator.of(context).pop();
+      // 4. Safely handle navigation pop (assuming this was to close a bottom sheet/dialog)
+      // This pop should usually happen *after* the image is picked but *before* the cropper,
+      // but keeping it here for continuity.
+      // It's safer to use Navigator.pop(context) if it's a dialog.
+      // We will remove this, as the cropper likely opens a new screen and the pop should
+      // be handled when the picker/dialog is closed.
+      // If the code was inside a dialog, you would pop it before the cropper call.
+      // Navigator.of(context).pop(); // ⚠️ Removed, reposition as needed
 
       if (croppedFile != null) {
         uploadingImage = true;
-        image = File(croppedFile.path);
+        image = File(croppedFile.path); // Store the cropped file
         notifyListeners();
+
         showInSnackBar("Uploading image...", context);
-        String imageUrl = await chatService.uploadImage(image!, chatId!);
+
+        // 5. Upload Image
+        String imageUrl = await chatService.uploadImage(image!, chatId);
+
+        // 6. Update state after successful upload
+        uploadingImage = false;
+        notifyListeners();
+
         return imageUrl;
       }
     }
+
+    // Reset state if no image was selected or upload failed/cancelled
+    uploadingImage = false;
+    notifyListeners();
+    return null; // Return null if selection was cancelled or cropping failed
   }
 
   void showInSnackBar(String value, context) {

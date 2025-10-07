@@ -1,3 +1,5 @@
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -192,43 +194,30 @@ class _CreatePostState extends State<CreatePost> {
     );
   }
 
-  showImageChoices(BuildContext context, PostsViewModel viewModel) {
+  void showImageChoices(BuildContext context, PostsViewModel viewModel) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
       builder: (BuildContext context) {
-        return FractionallySizedBox(
-          heightFactor: .6,
+        return SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Text(
-                  'Select Image',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Divider(),
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
               ListTile(
-                leading: Icon(Ionicons.camera_outline),
-                title: Text('Camera'),
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Photo Gallery'),
                 onTap: () {
                   Navigator.pop(context);
-                  viewModel.pickImage(camera: true);
+                  // CALL THE NEW VIEWMODEL METHOD
+                  viewModel.fetchImageFromGallery();
                 },
               ),
               ListTile(
-                leading: Icon(Ionicons.image),
-                title: Text('Gallery'),
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Camera'),
                 onTap: () {
                   Navigator.pop(context);
-                  viewModel.pickImage();
+                  // CALL THE NEW VIEWMODEL METHOD
+                  viewModel.fetchImageFromCamera();
                 },
               ),
             ],
