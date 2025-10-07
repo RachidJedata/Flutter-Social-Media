@@ -7,14 +7,12 @@ import 'package:nurox_chat/components/life_cycle_event_handler.dart';
 import 'package:nurox_chat/landing/landing_page.dart';
 import 'package:nurox_chat/screens/mainscreen.dart';
 import 'package:nurox_chat/services/user_service.dart';
-import 'package:nurox_chat/utils/config.dart' as conf;
 import 'package:nurox_chat/utils/constants.dart';
 import 'package:nurox_chat/utils/providers.dart';
 import 'package:nurox_chat/view_models/theme/theme_view_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await conf.Config.initFirebase();
   await Firebase.initializeApp();
   runApp(MyApp());
 }

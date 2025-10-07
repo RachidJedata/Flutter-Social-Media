@@ -70,7 +70,7 @@ class _EditProfileState extends State<EditProfile> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
+                        color: Colors.grey.withValues(alpha: 0.3),
                         offset: new Offset(0.0, 0.0),
                         blurRadius: 2.0,
                         spreadRadius: 0.0,

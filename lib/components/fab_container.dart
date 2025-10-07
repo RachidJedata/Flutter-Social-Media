@@ -74,9 +74,12 @@ class FabContainer extends StatelessWidget {
               ListTile(
                 leading: Icon(
                   CupertinoIcons.camera_on_rectangle,
+                  color: Theme.of(context).colorScheme.secondary,
                   size: 25.0,
                 ),
-                title: Text('Make a post'),
+                title: Text(
+                  'Make a post',
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.of(context).push(
@@ -89,6 +92,7 @@ class FabContainer extends StatelessWidget {
               ListTile(
                 leading: Icon(
                   CupertinoIcons.camera_on_rectangle,
+                  color: Theme.of(context).colorScheme.secondary,
                   size: 25.0,
                 ),
                 title: Text('Add to story'),

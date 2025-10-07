@@ -1,22 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:nurox_chat/components/chat_item.dart';
 import 'package:nurox_chat/models/message.dart';
 import 'package:nurox_chat/utils/firebase.dart';
-import 'package:nurox_chat/view_models/user/user_view_model.dart';
 import 'package:nurox_chat/widgets/indicators.dart';
 
 class Chats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    UserViewModel viewModel =
-        Provider.of<UserViewModel>(context, listen: false);
-    viewModel.setUser();
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
-          onTap: (){
+          onTap: () {
             Navigator.pop(context);
           },
           child: Icon(Icons.keyboard_backspace),
@@ -24,9 +19,14 @@ class Chats extends StatelessWidget {
         title: Text("Chats"),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: userChatsStream('${viewModel.user!.uid ?? ""}'),
+        stream: userChatsStream('${firebaseAuth.currentUser!.uid}'),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          // print('here is my user ' + firebaseAuth.currentUser!.uid);
+          // print('here is my data ' + snapshot.data.toString());
+          if (snapshot.connectionState != ConnectionState.waiting) {
+            if (!snapshot.hasData) {
+              return Center(child: Text('No Chats'));
+            }
             List chatList = snapshot.data!.docs;
             if (chatList.isNotEmpty) {
               return ListView.separated(
@@ -44,7 +44,7 @@ class Chats extends StatelessWidget {
                         List users = chatListSnapshot.get('users');
                         // remove the current user's id from the Users
                         // list so we can get the second user's id
-                        users.remove('${viewModel.user!.uid ?? ""}');
+                        users.remove('${firebaseAuth.currentUser!.uid}');
                         String recipient = users[0];
                         return ChatItem(
                           userId: recipient,
@@ -53,7 +53,7 @@ class Chats extends StatelessWidget {
                           time: message.time!,
                           chatId: chatListSnapshot.id,
                           type: message.type!,
-                          currentUserId: viewModel.user!.uid ?? "",
+                          currentUserId: firebaseAuth.currentUser!.uid,
                         );
                       } else {
                         return SizedBox();

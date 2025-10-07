@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -63,9 +62,8 @@ class ChatItem extends StatelessWidget {
                       )
                     : CircleAvatar(
                         radius: 25.0,
-                        backgroundImage: CachedNetworkImageProvider(
-                          '${user.photoUrl}',
-                        ),
+                        backgroundColor: Colors.transparent,
+                        backgroundImage: AssetImage(user.photoUrl!),
                       ),
                 Positioned(
                   bottom: 0.0,

@@ -31,9 +31,9 @@ class _TabScreenState extends State<TabScreen> {
       'index': 1,
     },
     {
-      'title': 'unsee',
+      'title': 'add Post/Story',
       'icon': Ionicons.add_circle,
-      'page': Text('nes'),
+      'page': '',
       'index': 2,
     },
     {
@@ -79,12 +79,10 @@ class _TabScreenState extends State<TabScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(width: 5),
-
             for (Map item in pages)
               if (item['index'] == 2)
-                // If index is 2 (Home), return the Fab widget directly as the item
+                // If index is 2 (Add Post/Stroy), return the Fab widget directly as the item
                 buildFab()
-
               else if (item['index'] == 3)
                 StreamBuilder<int>(
                   stream:
@@ -161,7 +159,6 @@ class _TabScreenState extends State<TabScreen> {
                     onPressed: () => navigationTapped(item['index']),
                   ),
                 ),
-
             const SizedBox(width: 5),
           ],
         ),
@@ -173,7 +170,6 @@ class _TabScreenState extends State<TabScreen> {
     return Container(
       height: 45.0,
       width: 45.0,
-      // ignore: missing_required_param
       child: FabContainer(
         icon: Ionicons.add_outline,
         mini: true,
@@ -191,7 +187,7 @@ class _TabScreenState extends State<TabScreen> {
     return notificationRef
         .doc(firebaseAuth.currentUser!.uid)
         .collection('notifications')
-        .snapshots() // 🌟 Get a stream of QuerySnapshots 🌟
+        .snapshots() // Get a stream of QuerySnapshots
         .map((snapshot) {
       // Map each new snapshot event to its document count (an int)
       return snapshot.docs.length;

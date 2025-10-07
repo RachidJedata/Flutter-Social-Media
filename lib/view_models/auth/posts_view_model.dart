@@ -80,17 +80,12 @@ class PostsViewModel extends ChangeNotifier {
   }
 
   setPost(PostModel post) {
-    if (post != null) {
-      description = post.description;
-      imgLink = post.mediaUrl;
-      location = post.location;
-      edit = true;
-      edit = false;
-      notifyListeners();
-    } else {
-      edit = false;
-      notifyListeners();
-    }
+    description = post.description;
+    imgLink = post.mediaUrl;
+    location = post.location;
+    edit = true;
+    edit = false;
+    notifyListeners();
   }
 
   setUsername(String val) {
@@ -117,29 +112,68 @@ class PostsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  final LocationSettings settings = LocationSettings(
+    accuracy: LocationAccuracy.high,
+    // Add platform-specific settings here if needed (AndroidSettings, AppleSettings, etc.)
+  );
+
   //Functions
-  getLocation() async {
-    loading = true;
-    notifyListeners();
-    LocationPermission permission = await Geolocator.checkPermission();
-    print(permission);
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      LocationPermission rPermission = await Geolocator.requestPermission();
-      print(rPermission);
-      await getLocation();
-    } else {
+  Future<void> getLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // 1. Check if location services are enabled on the device
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled, handle this case (e.g., show a dialog)
+      print('Location services are disabled.');
+      return;
+    }
+
+    // 2. Check current permission status
+    permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      // 3. Request permission if denied
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // User denied permission again
+        print('Location permissions are denied.');
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are permanently denied, direct the user to app settings
+      print(
+          'Location permissions are permanently denied, we cannot request permissions.');
+      return;
+    }
+
+    // If the code reaches here, permission is granted (whileInUse or always)
+    print('Location usage is enabled.');
+
+    try {
+      // You can now safely call Geolocator.getCurrentPosition()
       position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+        // Use the required settings parameter
+        locationSettings: settings,
+      );
+
       List<Placemark> placemarks = await placemarkFromCoordinates(
           position!.latitude, position!.longitude);
+
       placemark = placemarks[0];
       location = " ${placemarks[0].locality}, ${placemarks[0].country}";
       locationTEC.text = location!;
-      print(location);
+      print('Location fetched: $location');
+      setLocation(location ?? this.location ?? '');
+    } catch (e) {
+      // If it fails, the error will be caught here instead of crashing
+      print('Error during getCurrentPosition or geocoding: $e');
+      // Handle the error (e.g., show a default location)
+      return;
     }
-    loading = false;
-    notifyListeners();
   }
 
   uploadPosts(BuildContext context) async {
