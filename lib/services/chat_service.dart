@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:nurox_chat/models/message.dart';
 import 'package:nurox_chat/models/user.dart';
+import 'package:nurox_chat/screens/view_image.dart';
 import 'package:nurox_chat/utils/firebase.dart';
 
 class ChatService {
@@ -43,7 +44,7 @@ class ChatService {
     await chatRef.doc(chatId).update({'reads': reads});
   }
 
-//determine when a user has start typing a message
+  //determine when a user has start typing a message
   setUserTyping(String chatId, UserModel user, bool userTyping) async {
     DocumentSnapshot snap = await chatRef.doc(chatId).get();
     Map typing = snap.get('typing') ?? {};
@@ -51,5 +52,70 @@ class ChatService {
     await chatRef.doc(chatId).update({
       'typing': typing,
     });
+  }
+
+// You will need to pass the current user ID to this function.
+// This function must return a Stream<int>.
+  Stream<int> getNumberOfUnreadMessages(String currentUserId) {
+    // 1. Stream the main chat documents where the user is a participant.
+    return chatRef
+        .where('users', arrayContains: currentUserId)
+        .snapshots()
+        .asyncMap((querySnapshot) async {
+      int totalUnread = 0;
+
+      // 2. Iterate through each chat document.
+      for (var chatDoc in querySnapshot.docs) {
+        final chatId = chatDoc.id;
+
+        // Safely read the 'reads' map from the chat document.
+
+        final reads = chatDoc['reads'] as Map<String, dynamic>? ?? {};
+
+        // Get the current user's last read message count.
+        final int readCount = (reads[currentUserId] as int?) ?? 0;
+
+        // 3. ASYNCHRONOUSLY fetch the actual total number of messages in the subcollection.
+        // We use .limit(1) and .get() to optimize fetching the COUNT, not all messages.
+        // Note: Getting the full collection size is inefficient;
+        // Firestore has no direct 'COUNT' function (though it's coming soon).
+        // The most common workaround is this:
+
+        final messagesQuery = await chatRef
+            .doc(chatId)
+            .collection('messages')
+            .count() // <-- Use the count() method for the actual number of documents
+            .get();
+
+        // Extract the count.
+        final int totalMessagesInChat = messagesQuery.count ?? 0;
+
+        // 4. Calculate unread count for the current chat.
+        final int unreadCountForChat = totalMessagesInChat > readCount
+            ? totalMessagesInChat - readCount
+            : 0;
+
+        // 5. Accumulate the total unread count.
+        totalUnread += unreadCountForChat;
+      }
+
+      // 6. Return the aggregated result.
+      return totalUnread;
+    });
+  }
+
+  Stream<QuerySnapshot> messageListStream(String documentId) {
+    return chatRef
+        .doc(documentId)
+        .collection('messages')
+        .orderBy('time', descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> userChatsStream(String uid) {
+    return chatRef
+        .where('users', arrayContains: '$uid')
+        .orderBy('lastTextTime', descending: true)
+        .snapshots();
   }
 }

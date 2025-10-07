@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nurox_chat/auth/login/login.dart';
 import 'package:nurox_chat/auth/register/register.dart';
 import 'package:nurox_chat/utils/constants.dart';
+import 'package:video_player/video_player.dart';
 
 class Landing extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class _LandingState extends State<Landing> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 10.0),
                 child: Image.asset(
-                  'assets/icon/logo.png',
+                  'assets/icon/logo.jpg',
                   height: 200.0,
                   width: 200.0,
                   fit: BoxFit.cover,

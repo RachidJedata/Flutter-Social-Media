@@ -720,6 +720,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.0"
+  lottie:
+    dependency: "direct main"
+    description:
+      name: lottie
+      sha256: "8ae0be46dbd9e19641791dc12ee480d34e1fd3f84c749adc05f3ad9342b71b95"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.3.2"
   matcher:
     dependency: transitive
     description:
@@ -1158,7 +1166,7 @@ packages:
     source: hosted
     version: "2.2.0"
   video_player:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: video_player
       sha256: "0d55b1f1a31e5ad4c4967bfaa8ade0240b07d20ee4af1dfef5f531056512961a"

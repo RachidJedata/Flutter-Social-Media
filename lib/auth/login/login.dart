@@ -9,6 +9,7 @@ import 'package:nurox_chat/components/text_form_builder.dart';
 import 'package:nurox_chat/utils/validation.dart';
 import 'package:nurox_chat/view_models/auth/login_view_model.dart';
 import 'package:nurox_chat/widgets/indicators.dart';
+import 'package:lottie/lottie.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -40,9 +41,7 @@ class _LoginState extends State<Login> {
             Container(
               height: 170.0,
               width: MediaQuery.of(context).size.width,
-              child: Image.asset(
-                'assets/images/login.png',
-              ),
+              child: Lottie.asset('assets/icon/login.lottie'),
             ),
             SizedBox(height: 10.0),
             Center(

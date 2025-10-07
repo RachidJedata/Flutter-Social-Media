@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:nurox_chat/chats/recent_chats.dart';
 import 'package:nurox_chat/models/post.dart';
+import 'package:nurox_chat/screens/view_image.dart';
+import 'package:nurox_chat/services/chat_service.dart';
 import 'package:nurox_chat/utils/constants.dart';
 import 'package:nurox_chat/utils/firebase.dart';
 import 'package:nurox_chat/widgets/indicators.dart';
@@ -43,33 +45,69 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          Constants.appName,
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Ionicons.chatbubble_ellipses,
-              color: Theme.of(context).primaryColor,
-              size: 30.0,
+          automaticallyImplyLeading: false,
+          title: Text(
+            Constants.appName,
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder: (_) => Chats(),
-                ),
-              );
-            },
           ),
-          SizedBox(width: 20.0),
-        ],
-      ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(
+                    Ionicons.chatbubble_ellipses,
+                    color: Theme.of(context).primaryColor,
+                    size: 30.0,
+                  ),
+                  // You can add something else above it if you want (like a badge)
+                  StreamBuilder<int>(
+                    stream: ChatService()
+                        .getNumberOfUnreadMessages(currentUserId()),
+                    builder: (context, AsyncSnapshot<int?> snapshot) {
+                      final int messagesCount = snapshot.data ?? 0;
+                      print('messagesCount $messagesCount');
+
+                      if (messagesCount == 0) {
+                        return const SizedBox();
+                      }
+
+                      return Positioned(
+                        right: -1,
+                        top: -4,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            messagesCount > 99 ? '99+' : '$messagesCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                ],
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (_) => Chats(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(width: 20.0),
+          ]),
       body: RefreshIndicator(
         color: Theme.of(context).colorScheme.secondary,
         onRefresh: () =>

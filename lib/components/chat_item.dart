@@ -167,7 +167,7 @@ class ChatItem extends StatelessWidget {
                   "$counter",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 10,
+                    fontSize: 14,
                   ),
                   textAlign: TextAlign.center,
                 ),
