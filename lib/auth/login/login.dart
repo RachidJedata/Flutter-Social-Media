@@ -42,7 +42,7 @@ class _LoginState extends State<Login> {
             Container(
               height: 170.0,
               width: MediaQuery.of(context).size.width,
-              child: Lottie.asset('assets/icon/login.lottie'),
+              child: Lottie.asset('assets/Global_Network.json'),
             ),
             SizedBox(height: 10.0),
             Center(
