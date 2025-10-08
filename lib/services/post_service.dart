@@ -30,12 +30,13 @@ class PostService extends Service {
     DocumentSnapshot doc =
         await usersRef.doc(firebaseAuth.currentUser!.uid).get();
 
-    print("here is my Data " + doc.data().toString());
+    // print("here is my Data " + doc.data().toString());
     user = UserModel.fromJson(
       doc.data() as Map<String, dynamic>,
     );
+  
     var ref = postRef.doc();
-    print("this is the username " + user!.username!);
+    // print("this is the username " + user!.username!);
     ref.set({
       "id": ref.id,
       "postId": ref.id,

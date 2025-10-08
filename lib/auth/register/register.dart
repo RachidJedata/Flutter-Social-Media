@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:nurox_chat/screens/mainscreen.dart';
 import 'package:provider/provider.dart';
-import 'package:nurox_chat/auth/login/login.dart';
 import 'package:nurox_chat/components/password_text_field.dart';
 import 'package:nurox_chat/components/text_form_builder.dart';
 import 'package:nurox_chat/utils/validation.dart';
@@ -30,6 +30,7 @@ class _RegisterState extends State<Register> {
           elevation: 0,
           backgroundColor: Colors.transparent, // optional for a clean look
           iconTheme: IconThemeData(color: Colors.black), // arrow color
+          
         ),
         key: viewModel.scaffoldKey,
         body: ListView(
@@ -37,7 +38,7 @@ class _RegisterState extends State<Register> {
           children: [
             SizedBox(height: MediaQuery.of(context).size.height / 27),
             Text(
-              'Welcome to Wooble\nCreate a new account and connect with friends',
+              'Welcome to Raja Chat\nCreate a new account and connect with friends',
               style: GoogleFonts.nunitoSans(
                 fontWeight: FontWeight.bold,
                 fontSize: 25.0,
@@ -50,7 +51,7 @@ class _RegisterState extends State<Register> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Already have an account  ',
+                  'Already have an account ? ',
                 ),
                 GestureDetector(
                   onTap: () => Navigator.pop(context),

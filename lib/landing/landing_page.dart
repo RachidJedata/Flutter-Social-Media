@@ -43,7 +43,7 @@ class Landing extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        // color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.surface,
         elevation: 0.0,
         child: Padding(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),

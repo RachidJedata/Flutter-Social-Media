@@ -5,8 +5,6 @@ import 'package:nurox_chat/models/user.dart';
 import 'package:nurox_chat/utils/firebase.dart';
 import 'package:nurox_chat/widgets/indicators.dart';
 import 'package:story/story.dart';
-import 'package:timeago/timeago.dart' as timeago;
-import 'package:nurox_chat/services/status_services.dart';
 
 class StatusScreen extends StatefulWidget {
   // Pass the ID of the user whose statuses we want to view
@@ -103,44 +101,11 @@ class _StatusScreenState extends State<StatusScreen> {
                   width: MediaQuery.of(context).size.width,
                   child: Stack(
                     children: [
-                      // Status Content (Image/Video)
-                      Positioned.fill(
+                      Align(
+                        alignment: Alignment.topCenter,
                         child: Padding(
                           padding: const EdgeInsets.only(top: 50.0),
                           child: getImage(stats.url!, context),
-                        ),
-                      ),
-
-                      // User Info Header
-                      Positioned(
-                        top: 65.0,
-                        left: 10.0,
-                        right: 10.0,
-                        child: FutureBuilder<DocumentSnapshot>(
-                          // Fetch user data using the known ownerId
-                          future: usersRef.doc(widget.ownerId).get(),
-                          builder: (context, userSnapshot) {
-                            if (!userSnapshot.hasData ||
-                                !userSnapshot.data!.exists) {
-                              return const SizedBox();
-                            }
-                            UserModel user = UserModel.fromJson(
-                                userSnapshot.data!.data()
-                                    as Map<String, dynamic>);
-
-                            return Row(
-                              children: [
-                                // User Avatar and Info (remaining code is correct for UI)
-                                // ...
-                                // Close Button
-                                IconButton(
-                                  icon: const Icon(Icons.close,
-                                      color: Colors.white),
-                                  onPressed: () => Navigator.pop(context),
-                                )
-                              ],
-                            );
-                          },
                         ),
                       ),
 
@@ -189,15 +154,21 @@ class _StatusScreenState extends State<StatusScreen> {
 
   // Helper functions
   Widget getImage(String assetPath, BuildContext context) {
-    return Image.asset(
-      assetPath, // The path defined in pubspec.yaml (e.g., 'assets/images/my_image.png')
-      fit: BoxFit.contain,
-      height: MediaQuery.of(context).size.height,
+    return Padding(
+      padding: const EdgeInsets.only(top: 17.0),
+      child: SizedBox(
+        height: 700,
+        width: 700,
+        child: Image.asset(
+          assetPath, // The path defined in pubspec.yaml (e.g., 'assets/images/my_image.png')
+          fit: BoxFit.fitHeight,
 
-      errorBuilder: (context, error, stackTrace) {
-        // Show the error icon if the asset cannot be found/loaded
-        return const Center(child: Icon(Icons.error, color: Colors.white));
-      },
+          errorBuilder: (context, error, stackTrace) {
+            // Show the error icon if the asset cannot be found/loaded
+            return const Center(child: Icon(Icons.error, color: Colors.white));
+          },
+        ),
+      ),
     );
   }
 

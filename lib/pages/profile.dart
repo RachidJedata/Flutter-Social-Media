@@ -201,7 +201,6 @@ class _ProfileState extends State<Profile> {
                                         ],
                                       ),
                                     ),
-                                    // : buildLikeButton()
                                   ],
                                 ),
                               ],
@@ -248,8 +247,7 @@ class _ProfileState extends State<Profile> {
                                       QuerySnapshot<Object?>? snap =
                                           snapshot.data;
                                       List<DocumentSnapshot> docs = snap!.docs;
-                                      return buildCount(
-                                          "POSTS", docs.length ?? 0);
+                                      return buildCount("POSTS", docs.length);
                                     } else {
                                       return buildCount("POSTS", 0);
                                     }
@@ -275,7 +273,7 @@ class _ProfileState extends State<Profile> {
                                           snapshot.data;
                                       List<DocumentSnapshot> docs = snap!.docs;
                                       return buildCount(
-                                          "FOLLOWERS", docs.length ?? 0);
+                                          "FOLLOWERS", docs.length);
                                     } else {
                                       return buildCount("FOLLOWERS", 0);
                                     }
@@ -301,7 +299,7 @@ class _ProfileState extends State<Profile> {
                                           snapshot.data;
                                       List<DocumentSnapshot> docs = snap!.docs;
                                       return buildCount(
-                                          "FOLLOWING", docs.length ?? 0);
+                                          "FOLLOWING", docs.length);
                                     } else {
                                       return buildCount("FOLLOWING", 0);
                                     }
@@ -545,61 +543,11 @@ class _ProfileState extends State<Profile> {
           .snapshots(),
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (_, DocumentSnapshot snapshot) {
-        PostModel posts =
+        PostModel post =
             PostModel.fromJson(snapshot.data() as Map<String, dynamic>);
         return PostTile(
-          post: posts,
+          post: post,
         );
-      },
-    );
-  }
-
-  buildLikeButton() {
-    return StreamBuilder(
-      stream: favUsersRef
-          .where('postId', isEqualTo: widget.profileId)
-          .where('userId', isEqualTo: currentUserId())
-          .snapshots(),
-      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasData) {
-          List<QueryDocumentSnapshot> docs = snapshot.data?.docs ?? [];
-          return GestureDetector(
-            onTap: () {
-              if (docs.isEmpty) {
-                favUsersRef.add({
-                  'userId': currentUserId(),
-                  'postId': widget.profileId,
-                  'dateCreated': Timestamp.now(),
-                });
-              } else {
-                favUsersRef.doc(docs[0].id).delete();
-              }
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withValues(alpha: 0.2),
-                    spreadRadius: 3.0,
-                    blurRadius: 5.0,
-                  )
-                ],
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(3.0),
-                child: Icon(
-                  docs.isEmpty
-                      ? CupertinoIcons.heart
-                      : CupertinoIcons.heart_fill,
-                  color: Colors.red,
-                ),
-              ),
-            ),
-          );
-        }
-        return Container();
       },
     );
   }
