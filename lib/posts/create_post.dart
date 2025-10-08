@@ -80,7 +80,10 @@ class _CreatePostState extends State<CreatePost> {
                     ),
                     title: Text(
                       user.username!,
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
                       user.email!,
@@ -131,10 +134,10 @@ class _CreatePostState extends State<CreatePost> {
             SizedBox(height: 20.0),
             Text(
               'Post Caption'.toUpperCase(),
-              style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             TextFormField(
               initialValue: viewModel.description,
@@ -148,10 +151,10 @@ class _CreatePostState extends State<CreatePost> {
             SizedBox(height: 20.0),
             Text(
               'Location'.toUpperCase(),
-              style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             ListTile(
               contentPadding: EdgeInsets.all(0.0),
