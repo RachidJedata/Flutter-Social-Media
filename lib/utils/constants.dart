@@ -31,6 +31,16 @@ class Constants {
     primaryColor: greenMid,
     scaffoldBackgroundColor: lightBG,
     textSelectionTheme: TextSelectionThemeData(cursorColor: greenMid),
+
+    // 💡 THE FIX FOR TEXT COLOR IN LIGHT THEME
+    textTheme: GoogleFonts.nunitoTextTheme(
+      ThemeData.light().textTheme.apply(
+            bodyColor:
+                Colors.black, // Default color for most text in light mode
+            displayColor: Colors.black, // Default color for headlines/displays
+          ),
+    ),
+
     appBarTheme: AppBarTheme(
       elevation: 0,
       backgroundColor: lightBG,
@@ -63,6 +73,15 @@ class Constants {
     primaryColor: greenMid,
     scaffoldBackgroundColor: darkBG,
     textSelectionTheme: TextSelectionThemeData(cursorColor: greenMid),
+
+    // 💡 THE FIX FOR TEXT COLOR IN DARK THEME
+    textTheme: GoogleFonts.nunitoTextTheme(
+      ThemeData.dark().textTheme.apply(
+            bodyColor: Colors.white, // Default color for most text in dark mode
+            displayColor: Colors.white, // Default color for headlines/displays
+          ),
+    ),
+
     appBarTheme: AppBarTheme(
       elevation: 0,
       backgroundColor: darkBG,
@@ -88,13 +107,6 @@ class Constants {
         foregroundColor: Colors.white,
       ),
     ),
-  );
-
-  // 🌀 Optional gradient utility for UI backgrounds
-  static LinearGradient greenGradient = LinearGradient(
-    colors: [greenMid, greenDark1],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
   );
 
   static List<T> map<T>(List list, Function handler) {

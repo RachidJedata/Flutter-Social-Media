@@ -1,37 +1,40 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ThemeProvider extends ChangeNotifier {
-  final String key = 'theme';
-  SharedPreferences? _prefs;
+// Key for saving the preference
+const String THEME_KEY = "theme_preference";
+
+class ThemeProvider with ChangeNotifier {
+  // Initial state (defaults to light mode)
   bool _darkTheme = false;
+
   bool get dark => _darkTheme;
 
-  AppProvider() {
-    _darkTheme = true;
-    _loadfromPrefs();
+  ThemeProvider() {
+    // Load preference when the provider is created
+    _loadFromPrefs();
   }
 
-  toggleTheme() {
+  // --- Core Functions ---
+
+  // 1. Toggles the theme and saves the new value
+  void toggleTheme() {
     _darkTheme = !_darkTheme;
     _saveToPrefs();
     notifyListeners();
   }
 
-  _initPrefs() async {
-    _prefs ??= await SharedPreferences.getInstance();
-  }
-
-  _loadfromPrefs() async {
-    await _initPrefs();
-    _darkTheme = _prefs!.getBool(key) ?? true;
+  // 2. Loads the theme preference from storage
+  void _loadFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Get the saved boolean; default to false (light mode) if no preference is found
+    _darkTheme = prefs.getBool(THEME_KEY) ?? false;
     notifyListeners();
   }
 
-  _saveToPrefs() async {
-    await _initPrefs();
-    _prefs!.setBool(key, _darkTheme);
-    notifyListeners();
+  // 3. Saves the current theme preference to storage
+  void _saveToPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(THEME_KEY, _darkTheme);
   }
 }

@@ -60,7 +60,6 @@ dependencies:
   google_fonts: ^6.3.2
   provider: ^6.0.3
   image_cropper: ^11.0.0
-  shared_preferences: ^2.0.6
   ionicons: ^0.2.1
   loading_overlay: ^0.3.0
   like_button: ^2.0.4
@@ -68,6 +67,7 @@ dependencies:
   permission_handler: ^12.0.1
   story: ^0.8.0
   story_view: ^0.14.0
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
@@ -88,7 +88,6 @@ flutter:
   assets:
     - assets/images/
     - assets/icon/
-    - assets/intro.mp4
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

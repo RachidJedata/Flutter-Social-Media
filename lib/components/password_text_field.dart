@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:nurox_chat/components/custom_card.dart';
+import 'package:nurox_chat/utils/constants.dart';
 
 class PasswordFormBuilder extends StatefulWidget {
   final String? initialValue;
@@ -57,6 +58,7 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
             },
             borderRadius: BorderRadius.circular(40.0),
             child: Container(
+              // color: Theme.of(context).colorScheme.surface,
               child: Theme(
                 data: ThemeData(
                   primaryColor: Theme.of(context).colorScheme.secondary,
@@ -64,7 +66,7 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
                       secondary: Theme.of(context).colorScheme.secondary),
                 ),
                 child: TextFormField(
-                  cursorColor: Theme.of(context).colorScheme.secondary,
+                  // cursorColor: Theme.of(context).colorScheme.secondary,
                   initialValue: widget.initialValue,
                   enabled: widget.enabled,
                   onChanged: (val) {
@@ -72,9 +74,9 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
                     setState(() {});
                     widget.onSaved!(val);
                   },
-                  style: TextStyle(
-                    fontSize: 15.0,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontSize: 15.0,
+                      ),
                   key: widget.key,
                   controller: widget.controller,
                   // obscureText: widget.obscureText,
@@ -112,9 +114,9 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                     ),
-                    // fillColor: Colors.white,
-                    filled: true,
                     hintText: widget.hintText,
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surface,
                     hintStyle: TextStyle(
                       color: Colors.grey[400],
                     ),
@@ -153,8 +155,8 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
         Radius.circular(30.0),
       ),
       borderSide: BorderSide(
-        color: Colors.white,
-        width: 0.0,
+        color: Constants.darkAccent,
+        // width: 0.0,
       ),
     );
   }
@@ -165,7 +167,7 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
         Radius.circular(30.0),
       ),
       borderSide: BorderSide(
-        color: Theme.of(context).colorScheme.secondary,
+        color: Constants.greenLight2,
         width: 1.0,
       ),
     );

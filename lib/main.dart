@@ -14,7 +14,12 @@ import 'package:nurox_chat/view_models/theme/theme_view_model.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -39,12 +44,12 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: providers,
       child: Consumer<ThemeProvider>(
-        builder: (context, ThemeProvider notifier, Widget? child) {
+        builder: (context, ThemeProvider themeProvider, Widget? child) {
           return MaterialApp(
             title: Constants.appName,
             debugShowCheckedModeBanner: false,
             theme: themeData(
-              notifier.dark ? Constants.darkTheme : Constants.lightTheme,
+              themeProvider.dark ? Constants.darkTheme : Constants.lightTheme,
             ),
             home: StreamBuilder(
               stream: FirebaseAuth.instance.authStateChanges(),

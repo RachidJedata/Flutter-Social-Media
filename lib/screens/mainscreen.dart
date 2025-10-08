@@ -73,6 +73,7 @@ class _TabScreenState extends State<TabScreen> {
         child: pages[_page]['page'],
       ),
       bottomNavigationBar: BottomAppBar(
+        color: Theme.of(context).colorScheme.surface,
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -131,10 +132,8 @@ class _TabScreenState extends State<TabScreen> {
                               child: Text(
                                 // Display the resolved number, converted to String
                                 notificationCount.toString(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                ),
+                                style: TextStyle(
+                                    fontSize: 13, color: Colors.white),
                                 textAlign: TextAlign.center,
                               ),
                             ),

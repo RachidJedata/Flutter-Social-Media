@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nurox_chat/components/custom_card.dart';
+import 'package:nurox_chat/utils/constants.dart';
 
 class TextFormBuilder extends StatefulWidget {
   final String? initialValue;
@@ -55,6 +56,7 @@ class _TextFormBuilderState extends State<TextFormBuilder> {
             },
             borderRadius: BorderRadius.circular(40.0),
             child: Container(
+              color: Theme.of(context).colorScheme.surface,
               child: Theme(
                 data: ThemeData(
                   primaryColor: Theme.of(context).colorScheme.secondary,
@@ -71,9 +73,9 @@ class _TextFormBuilderState extends State<TextFormBuilder> {
                     setState(() {});
                     widget.onSaved!(val);
                   },
-                  style: TextStyle(
-                    fontSize: 15.0,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontSize: 15.0,
+                      ),
                   key: widget.key,
                   controller: widget.controller,
                   obscureText: widget.obscureText,
@@ -105,7 +107,7 @@ class _TextFormBuilderState extends State<TextFormBuilder> {
                       size: 15.0,
                       color: Theme.of(context).colorScheme.secondary,
                     ),
-                    // fillColor: Colors.white,
+                    fillColor: Theme.of(context).colorScheme.surface,
                     filled: true,
                     hintText: widget.hintText,
                     hintStyle: TextStyle(
@@ -146,8 +148,8 @@ class _TextFormBuilderState extends State<TextFormBuilder> {
         Radius.circular(30.0),
       ),
       borderSide: BorderSide(
-        color: Colors.white,
-        width: 0.0,
+        color: Constants.greenLight2,
+        // width: 0.0,
       ),
     );
   }

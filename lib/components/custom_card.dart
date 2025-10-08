@@ -17,17 +17,10 @@ class CustomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: elevated
-          ? BoxDecoration(
-              borderRadius: borderRadius,
-              color: Theme.of(context).cardColor,
-            )
-          : BoxDecoration(
-              borderRadius: borderRadius,
-              color: Theme.of(context).cardColor,
-            ),
+      color: Colors.transparent,
       child: Material(
         type: MaterialType.transparency,
+        color: Colors.transparent,
         borderRadius: borderRadius,
         child: InkWell(
           borderRadius: borderRadius,

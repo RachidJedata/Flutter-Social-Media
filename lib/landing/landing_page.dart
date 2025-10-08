@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:nurox_chat/auth/login/login.dart';
 import 'package:nurox_chat/auth/register/register.dart';
 import 'package:nurox_chat/utils/constants.dart';
-import 'package:video_player/video_player.dart';
 
 class Landing extends StatefulWidget {
   @override
@@ -23,28 +22,33 @@ class _LandingState extends State<Landing> {
             Align(
               alignment: Alignment.center,
               child: Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Image.asset(
-                  'assets/icon/logo.jpg',
-                  height: 200.0,
-                  width: 200.0,
-                  fit: BoxFit.cover,
-                ),
-              ),
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: ClipRRect(
+                    // 1. Define the radius you want to apply to the corners
+                    borderRadius:
+                        BorderRadius.circular(20.0), // Example radius of 20
+                    child: Image.asset(
+                      'assets/icon/logo.jpg',
+                      height: 200.0,
+                      width: 200.0,
+                      fit: BoxFit.cover,
+                    ),
+                  )),
             ),
             Text(
               Constants.appName,
-              style: TextStyle(
-                fontSize: 22.0,
-                color: Theme.of(context).colorScheme.secondary,
-                fontWeight: FontWeight.w900,
-                fontFamily: 'Ubuntu-Regular',
-              ),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontSize: 22.0,
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontWeight: FontWeight.w900,
+                    fontFamily: 'Ubuntu-Regular',
+                  ),
             )
           ],
         ),
       ),
       bottomNavigationBar: BottomAppBar(
+        color: Theme.of(context).colorScheme.surface,
         elevation: 0.0,
         child: Padding(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
@@ -78,9 +82,7 @@ class _LandingState extends State<Landing> {
                     child: Text(
                       'LOGIN',
                       style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
+                          fontWeight: FontWeight.w900, color: Colors.white),
                     ),
                   ),
                 ),
@@ -111,10 +113,10 @@ class _LandingState extends State<Landing> {
                   child: Center(
                     child: Text(
                       'SIGN UP',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                          ),
                     ),
                   ),
                 ),

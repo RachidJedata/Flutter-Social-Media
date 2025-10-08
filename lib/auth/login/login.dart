@@ -23,6 +23,7 @@ class _LoginState extends State<Login> {
 
     return LoadingOverlay(
       progressIndicator: circularProgress(context),
+      color: Theme.of(context).colorScheme.surface,
       isLoading: viewModel.loading,
       child: Scaffold(
         appBar: AppBar(
@@ -32,7 +33,7 @@ class _LoginState extends State<Login> {
           backgroundColor: Colors.transparent, // optional for a clean look
           iconTheme: IconThemeData(color: Colors.black), // arrow color
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         key: viewModel.scaffoldKey,
         body: ListView(
           padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),

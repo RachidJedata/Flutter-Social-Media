@@ -79,10 +79,11 @@ class _ProfileState extends State<Profile> {
                       },
                       child: Text(
                         'Log Out',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 15.0,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 15.0,
+                                ),
                       ),
                     ),
                   ),
@@ -159,10 +160,13 @@ class _ProfileState extends State<Profile> {
                                           width: 130.0,
                                           child: Text(
                                             user.username!,
-                                            style: TextStyle(
-                                              fontSize: 15.0,
-                                              fontWeight: FontWeight.w900,
-                                            ),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium!
+                                                .copyWith(
+                                                  fontSize: 15.0,
+                                                  fontWeight: FontWeight.w900,
+                                                ),
                                             maxLines: null,
                                           ),
                                         ),
@@ -213,10 +217,13 @@ class _ProfileState extends State<Profile> {
                                   width: 200,
                                   child: Text(
                                     user.bio!,
-                                    style: TextStyle(
-                                      fontSize: 10.0,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(
+                                          fontSize: 10.0,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                     maxLines: null,
                                   ),
                                 ),
@@ -325,7 +332,10 @@ class _ProfileState extends State<Profile> {
                         children: [
                           Text(
                             'All Posts',
-                            style: TextStyle(fontWeight: FontWeight.w900),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(fontWeight: FontWeight.w900),
                           ),
                           const Spacer(),
                           IconButton(
@@ -366,20 +376,20 @@ class _ProfileState extends State<Profile> {
       children: <Widget>[
         Text(
           count.toString(),
-          style: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.w900,
-            fontFamily: 'Ubuntu-Regular',
-          ),
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w900,
+                fontFamily: 'Ubuntu-Regular',
+              ),
         ),
         SizedBox(height: 3.0),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w400,
-            fontFamily: 'Ubuntu-Regular',
-          ),
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+                fontFamily: 'Ubuntu-Regular',
+              ),
         )
       ],
     );
@@ -440,10 +450,7 @@ class _ProfileState extends State<Profile> {
             ),
           ),
           child: Center(
-            child: Text(
-              text!,
-              style: TextStyle(color: Colors.white),
-            ),
+            child: Text(text!, style: Theme.of(context).textTheme.titleMedium!),
           ),
         ),
       ),

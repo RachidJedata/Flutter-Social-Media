@@ -56,9 +56,10 @@ class _ActivityItemsState extends State<ActivityItems> {
               )
             : CircleAvatar(
                 radius: 20.0,
-                backgroundImage: CachedNetworkImageProvider(
+                backgroundImage: AssetImage(
                   '${widget.activity!.userDp!}',
                 ),
+                backgroundColor: Colors.transparent,
               ),
         title: RichText(
           overflow: TextOverflow.ellipsis,
