@@ -26,7 +26,7 @@ class _LandingState extends State<Landing> {
                   child: ClipRRect(
                     // 1. Define the radius you want to apply to the corners
                     borderRadius:
-                        BorderRadius.circular(20.0), // Example radius of 20
+                        BorderRadius.circular(30.0), // Example radius of 20
                     child: Image.asset(
                       'assets/icon/logo.jpg',
                       height: 200.0,
