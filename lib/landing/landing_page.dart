@@ -4,12 +4,7 @@ import 'package:nurox_chat/auth/login/login.dart';
 import 'package:nurox_chat/auth/register/register.dart';
 import 'package:nurox_chat/utils/constants.dart';
 
-class Landing extends StatefulWidget {
-  @override
-  _LandingState createState() => _LandingState();
-}
-
-class _LandingState extends State<Landing> {
+class Landing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +43,7 @@ class _LandingState extends State<Landing> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Theme.of(context).colorScheme.surface,
+        // color: Theme.of(context).colorScheme.surface,
         elevation: 0.0,
         child: Padding(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),

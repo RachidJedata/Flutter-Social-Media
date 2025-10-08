@@ -52,11 +52,14 @@ class ChatItem extends StatelessWidget {
                         child: Center(
                           child: Text(
                             '${user.username![0].toUpperCase()}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w900,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  color: Colors.white,
+                                  fontSize: 15.0,
+                                  fontWeight: FontWeight.w900,
+                                ),
                           ),
                         ),
                       )
@@ -94,14 +97,15 @@ class ChatItem extends StatelessWidget {
             title: Text(
               '${user.username}',
               maxLines: 1,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             subtitle: Text(
               type == MessageType.IMAGE ? "IMAGE" : "$msg",
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
+              style: Theme.of(context).textTheme.titleMedium!,
             ),
             trailing: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -109,10 +113,10 @@ class ChatItem extends StatelessWidget {
                 SizedBox(height: 10),
                 Text(
                   "${timeago.format(time!.toDate())}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 11,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 11,
+                      ),
                 ),
                 SizedBox(height: 5),
                 buildCounter(context),
@@ -165,10 +169,9 @@ class ChatItem extends StatelessWidget {
                 padding: EdgeInsets.only(top: 1, left: 5, right: 5),
                 child: Text(
                   "$counter",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontSize: 14,
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ),

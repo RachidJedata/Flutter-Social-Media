@@ -13,18 +13,21 @@ import 'package:nurox_chat/view_models/theme/theme_view_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(); //Initialisation du Firebase
   runApp(
+    // Lancement de  l'application
     ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+      //
+      create: (_) => ThemeProvider(), //Notification des changement de theme
       child: MyApp(),
     ),
   );
 }
 
+// Classe principale de l'application
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _MyAppState createState() => _MyAppState(); //
 }
 
 class _MyAppState extends State<MyApp> {
@@ -32,7 +35,9 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(
+      //Observer l'etat de l'application
       LifecycleEventHandler(
+        //Mettre a jour l'etat de l'utilisateur
         detachedCallBack: () => UserService().setUserStatus(false),
         resumeCallBack: () => UserService().setUserStatus(true),
       ),
@@ -42,8 +47,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
+      // Contient plusieurs providers
       providers: providers,
       child: Consumer<ThemeProvider>(
+        // Permet l'ecout du provider theme
         builder: (context, ThemeProvider themeProvider, Widget? child) {
           return MaterialApp(
             title: Constants.appName,
@@ -51,9 +58,9 @@ class _MyAppState extends State<MyApp> {
             theme: themeData(
               themeProvider.dark ? Constants.darkTheme : Constants.lightTheme,
             ),
-            home: StreamBuilder(
+            home: StreamBuilder<User?>(
               stream: FirebaseAuth.instance.authStateChanges(),
-              builder: ((BuildContext context, snapshot) {
+              builder: ((BuildContext context, AsyncSnapshot<User?> snapshot) {
                 if (snapshot.hasData) {
                   return TabScreen();
                 } else

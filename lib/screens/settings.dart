@@ -65,7 +65,7 @@ class _SettingState extends State<Setting> {
                 style: textTheme.titleSmall,
               ),
               trailing: Consumer<ThemeProvider>(
-                builder: (context, notifier, child) => CupertinoSwitch(
+                builder: (context, ThemeProvider notifier, child) => CupertinoSwitch(
                   onChanged: (val) {
                     notifier.toggleTheme();
                   },

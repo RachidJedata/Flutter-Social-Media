@@ -58,7 +58,7 @@ class _LoginState extends State<Login> {
               child: Text(
                 'Log into your account and get started!',
                 style: TextStyle(
-                  fontSize: 12.0,
+                  fontSize: 14.0,
                   fontWeight: FontWeight.w300,
                   color: Theme.of(context).colorScheme.secondary,
                 ),

@@ -50,10 +50,6 @@ class _TabScreenState extends State<TabScreen> {
     },
   ];
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

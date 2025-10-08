@@ -265,11 +265,16 @@ class _ConversationState extends State<Conversation> {
                           child: TextField(
                             controller: messageController,
                             focusNode: focusNode,
-                            style: TextStyle(
-                              fontSize: 15.0,
-                              color:
-                                  Theme.of(context).textTheme.titleLarge!.color,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  fontSize: 15.0,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .color,
+                                ),
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.all(10.0),
                               enabledBorder: InputBorder.none,
@@ -367,18 +372,20 @@ class _ConversationState extends State<Conversation> {
                     children: <Widget>[
                       Text(
                         recipientUser.username ?? 'User',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15.0,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15.0,
+                                ),
                       ),
                       const SizedBox(height: 5.0),
                       Text(
                         _buildOnlineText(recipientUser, isTyping),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 11,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 11,
+                                ),
                       ),
                     ],
                   ),

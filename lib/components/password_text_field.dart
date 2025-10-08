@@ -71,7 +71,7 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
                   enabled: widget.enabled,
                   onChanged: (val) {
                     error = widget.validateFunction!(val);
-                    setState(() {});
+                    // setState(() {});
                     widget.onSaved!(val);
                   },
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
@@ -85,7 +85,7 @@ class _PasswordFormBuilderState extends State<PasswordFormBuilder> {
                   validator: widget.validateFunction,
                   onSaved: (val) {
                     error = widget.validateFunction!(val);
-                    setState(() {});
+                    // setState(() {});
                     widget.onSaved!(val!);
                   },
                   textInputAction: widget.textInputAction,

@@ -100,9 +100,9 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
         automaticallyImplyLeading: false,
         title: Text(
           Constants.appName,
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-          ),
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
         ),
         centerTitle: true,
       ),
@@ -153,7 +153,7 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
               child: TextFormField(
                 controller: searchController,
                 // Style the input text using the appropriate theme color for contrast
-                style: TextStyle(
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     color: colorScheme.onSecondaryContainer, fontSize: 16.0),
                 textAlignVertical: TextAlignVertical.center,
                 maxLength: 10,
@@ -183,12 +183,10 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
                   border: InputBorder.none, // Hide default border
                   counterText: '', // Hide character counter
                   hintText: 'Search...',
-                  hintStyle: TextStyle(
-                    fontSize: 15.0,
-                    // Use a lower-emphasis color (onSurfaceVariant) for the hint text
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w400,
-                  ),
+                  hintStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.w400,
+                      ),
                 ),
               ),
             ),
@@ -212,7 +210,10 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
             padding: const EdgeInsets.only(top: 20.0),
             child: Text(
               "No User Found",
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium!
+                  .copyWith(fontWeight: FontWeight.bold),
             ),
           ),
         );
@@ -236,11 +237,13 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
                           child: Center(
                             child: Text(
                               '${user.username![0].toUpperCase()}',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.w900,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.w900,
+                                  ),
                             ),
                           ),
                         )
@@ -251,10 +254,14 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
                         ),
                   title: Text(
                     user.username!,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
                     user.email!,
+                    style: Theme.of(context).textTheme.titleMedium!,
                   ),
                   trailing: GestureDetector(
                     onTap: () {

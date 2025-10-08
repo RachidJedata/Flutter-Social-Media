@@ -63,7 +63,6 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
                     color: Theme.of(context).primaryColor,
                     size: 30.0,
                   ),
-                  // You can add something else above it if you want (like a badge)
                   StreamBuilder<int>(
                     stream: ChatService()
                         .getNumberOfUnreadMessages(currentUserId()),
