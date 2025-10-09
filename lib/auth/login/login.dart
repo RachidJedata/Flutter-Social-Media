@@ -11,29 +11,32 @@ import 'package:nurox_chat/view_models/auth/login_view_model.dart';
 import 'package:nurox_chat/widgets/indicators.dart';
 import 'package:lottie/lottie.dart';
 
+// Écran de connexion (Login Screen)
+
 class Login extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  _LoginState createState() => _LoginState();  // // Crée l'état associé à la page si l'utilisateur veut faire un login ou non 
 }
+
 
 class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
-    LoginViewModel viewModel = Provider.of<LoginViewModel>(context);
+    LoginViewModel viewModel = Provider.of<LoginViewModel>(context);  //Récupère le ViewModel via Provider
 
     return LoadingOverlay(
       progressIndicator: circularProgress(context),
-      color: Theme.of(context).colorScheme.surface,
-      isLoading: viewModel.loading,
+      color: Theme.of(context).colorScheme.surface,  // prend la couleur d'arriere plan 
+      isLoading: viewModel.loading,   // Affiche le loader si "loading" est vrai
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading:
-              true, // enables the back arrow automatically
+          automaticallyImplyLeading:      
+              true, //  Affiche automatiquement la flèche de retour
           elevation: 0,
-          backgroundColor: Colors.transparent, // optional for a clean look
-          iconTheme: IconThemeData(color: Colors.black), // arrow color
+          backgroundColor: Colors.transparent, 
+          iconTheme: IconThemeData(color: Colors.black), 
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.surface,  
         key: viewModel.scaffoldKey,
         body: ListView(
           padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
@@ -65,7 +68,7 @@ class _LoginState extends State<Login> {
               ),
             ),
             SizedBox(height: 25.0),
-            buildForm(context, viewModel),
+            buildForm(context, viewModel),   // Appel du formulaire séparé pour plus de clarté
             SizedBox(height: 10.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -73,7 +76,7 @@ class _LoginState extends State<Login> {
                 Text('Don\'t have an account?'),
                 SizedBox(width: 5.0),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () {  // Navigation vers la page Register
                     Navigator.of(context).push(
                       CupertinoPageRoute(
                         builder: (_) => Register(),
@@ -95,36 +98,38 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+  // construire le formulaire de connexion
 
   buildForm(BuildContext context, LoginViewModel viewModel) {
     return Form(
-      key: viewModel.formKey,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
+      key: viewModel.formKey,  // Clé pour la validation et la sauvegarde du formulaire
+      autovalidateMode: AutovalidateMode.onUserInteraction,  // Validation automatique 
       child: Column(
         children: [
-          TextFormBuilder(
-            enabled: !viewModel.loading,
+          TextFormBuilder(  // Champ e-mail
+            enabled: !viewModel.loading,  // Désactivé pendant le chargement
             prefix: Ionicons.mail_outline,
             hintText: "Email",
             textInputAction: TextInputAction.next,
-            validateFunction: Validations.validateEmail,
+            validateFunction: Validations.validateEmail,  // Validation du format e-mail
             onSaved: (String val) {
-              viewModel.setEmail(val);
+              viewModel.setEmail(val);  // Sauvegarde la valeur dans le ViewModel
             },
             focusNode: viewModel.emailFN,
-            nextFocusNode: viewModel.passFN,
+            nextFocusNode: viewModel.passFN, // Passe au champ mot de passe
           ),
+          
           SizedBox(height: 15.0),
-          PasswordFormBuilder(
+          PasswordFormBuilder(  // Champ mot de passe
             enabled: !viewModel.loading,
             prefix: Ionicons.lock_closed_outline,
             suffix: Ionicons.eye_outline,
             hintText: "Password",
             textInputAction: TextInputAction.done,
             validateFunction: Validations.validatePassword,
-            submitAction: () => viewModel.login(context),
+            submitAction: () => viewModel.login(context),   //Soumet le formulaire via la touche "Entrée"
             onSaved: (String val) {
-              viewModel.setPassword(val);
+              viewModel.setPassword(val);   // Sauvegarde le mot de passe dans le ViewModel
             },
             focusNode: viewModel.passFN,
           ),
@@ -133,7 +138,7 @@ class _LoginState extends State<Login> {
             child: Padding(
               padding: EdgeInsets.only(right: 10.0),
               child: InkWell(
-                onTap: () => viewModel.forgotPassword(context),
+                onTap: () => viewModel.forgotPassword(context),   // Appelle la fonction de récupération de mot de passe 
                 child: Container(
                   width: 130,
                   height: 40,
@@ -151,7 +156,7 @@ class _LoginState extends State<Login> {
             ),
           ),
           SizedBox(height: 10.0),
-          Container(
+          Container(  // Bouton de connexion
             height: 45.0,
             width: 180.0,
             child: ElevatedButton(
@@ -174,7 +179,7 @@ class _LoginState extends State<Login> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              onPressed: () => viewModel.login(context),
+              onPressed: () => viewModel.login(context),  // Appelle la fonction de connexion
             ),
           ),
         ],
