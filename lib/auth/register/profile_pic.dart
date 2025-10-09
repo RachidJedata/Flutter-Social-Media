@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:nurox_chat/screens/mainscreen.dart';
 import 'package:provider/provider.dart';
 import 'package:nurox_chat/components/custom_image.dart';
 import 'package:nurox_chat/view_models/auth/posts_view_model.dart';
@@ -29,6 +31,25 @@ class _ProfilePictureState extends State<ProfilePicture> {
             title: Text('Add a profile picture'),
             centerTitle: true,
             automaticallyImplyLeading: false,
+            actions: [
+              GestureDetector(
+                onTap: () async {
+                  Navigator.of(context).pushReplacement(
+                      CupertinoPageRoute(builder: (_) => TabScreen()));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    'Skip'.toUpperCase(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15.0,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ),
+                ),
+              )
+            ],
           ),
           body: ListView(
             padding: EdgeInsets.symmetric(horizontal: 30.0),

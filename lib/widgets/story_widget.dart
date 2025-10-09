@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:nurox_chat/models/status.dart';
 import 'package:nurox_chat/models/user.dart';
 import 'package:nurox_chat/posts/story/status_view.dart';
 import 'package:nurox_chat/utils/firebase.dart';
@@ -135,7 +134,7 @@ class StoryWidget extends StatelessWidget {
                     padding: const EdgeInsets.all(3.0),
                     child: CircleAvatar(
                       radius: 30.0,
-                      backgroundColor: Colors.grey,
+                      backgroundColor: Colors.transparent,
                       backgroundImage: AssetImage(
                         user.photoUrl!,
                       ),

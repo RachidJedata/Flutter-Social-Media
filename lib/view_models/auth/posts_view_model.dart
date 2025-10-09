@@ -4,14 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nurox_chat/models/post.dart';
 import 'package:nurox_chat/screens/mainscreen.dart';
 import 'package:nurox_chat/services/ImagePickerService.dart';
 import 'package:nurox_chat/services/post_service.dart';
 import 'package:nurox_chat/services/user_service.dart';
-import 'package:nurox_chat/utils/constants.dart';
 import 'package:nurox_chat/utils/firebase.dart';
 
 class PostsViewModel extends ChangeNotifier {

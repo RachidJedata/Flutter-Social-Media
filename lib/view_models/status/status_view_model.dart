@@ -10,7 +10,6 @@ import 'package:nurox_chat/services/ImagePickerService.dart';
 import 'package:nurox_chat/services/status_services.dart';
 import 'package:nurox_chat/services/user_service.dart';
 import 'package:nurox_chat/utils/constants.dart';
-import 'package:flutter/cupertino.dart';
 
 class StatusViewModel extends ChangeNotifier {
   // Services
