@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nurox_chat/models/status.dart';
-import 'package:nurox_chat/models/user.dart';
 import 'package:nurox_chat/utils/firebase.dart';
 import 'package:nurox_chat/widgets/indicators.dart';
 import 'package:story/story.dart';

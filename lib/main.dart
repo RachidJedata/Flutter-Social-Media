@@ -15,11 +15,7 @@ void main() async {
   await Firebase.initializeApp(); //Initialisation du Firebase
   runApp(
     // Lancement de  l'application
-    ChangeNotifierProvider(
-      //
-      create: (_) => ThemeProvider(), //Notification des changement de theme
-      child: MyApp(),
-    ),
+    MyApp(),
   );
 }
 
@@ -47,11 +43,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
 
-      _userService.updateOnlineStatus(currentUserId!, true);
-
-
     if (currentUserId != null) {
-      // Appel asynchrone sans 'await' exécution en tâche de fond 
+      // Appel asynchrone sans 'await' exécution en tâche de fond
       // Bonne pratique pour les mises à jour de présence non critiques
       _userService.updateOnlineStatus(currentUserId!, true);
     }
@@ -61,7 +54,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void dispose() {
     //  Appelée quand le widget est retiré de l’arbre (ex. fermeture app ou déconnexion)
     if (currentUserId != null) {
-      //  l'appel de la methode async non bloqunte sans await 
+      //  l'appel de la methode async non bloqunte sans await
       _userService.updateOnlineStatus(currentUserId!, false);
     }
     WidgetsBinding.instance.removeObserver(this);
