@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+//Convertir un JSON vers une Class avec des attributs
 class CommentModel {
   String? username;
   String? comment;

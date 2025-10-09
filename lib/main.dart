@@ -47,6 +47,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
 
+      _userService.updateOnlineStatus(currentUserId!, true);
+
+
     if (currentUserId != null) {
       // Appel asynchrone sans 'await' exécution en tâche de fond 
       // Bonne pratique pour les mises à jour de présence non critiques
