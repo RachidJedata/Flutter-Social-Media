@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nurox_chat/models/enum/message_type.dart';
 
+//Convertir un JSON vers une Class avec des attributs
 class StatusModel {
   String? caption;
   String? url;

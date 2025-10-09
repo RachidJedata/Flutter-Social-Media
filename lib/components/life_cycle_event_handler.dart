@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nurox_chat/utils/firebase.dart';
 
 class LifecycleEventHandler extends WidgetsBindingObserver {
-  LifecycleEventHandler({this.currentUserId});
+  LifecycleEventHandler({required this.currentUserId});
 
   final String? currentUserId;
 

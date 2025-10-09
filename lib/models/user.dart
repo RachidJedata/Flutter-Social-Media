@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+
+//Convertir un JSON vers une Class avec des attributs
 class UserModel {
   String? username;
   String? email;
@@ -32,19 +34,5 @@ class UserModel {
     lastSeen = json['lastSeen'];
     bio = json['bio'];
     id = json['uid'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['username'] = this.username;
-    data['country'] = this.country;
-    data['email'] = this.email;
-    data['photoUrl'] = this.photoUrl;
-    data['bio'] = this.bio;
-    data['signedUpAt'] = this.signedUpAt;
-    data['isOnline'] = this.isOnline;
-    data['lastSeen'] = this.lastSeen;
-    data['id'] = this.id;
-    return data;
   }
 }
