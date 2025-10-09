@@ -4,7 +4,7 @@ import 'package:nurox_chat/auth/login/login.dart';
 import 'package:nurox_chat/auth/register/register.dart';
 import 'package:nurox_chat/utils/constants.dart';
 
-class Landing extends StatelessWidget {
+class Landing extends StatelessWidget {  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,9 +19,9 @@ class Landing extends StatelessWidget {
               child: Padding(
                   padding: const EdgeInsets.only(left: 10.0),
                   child: ClipRRect(
-                    // 1. Define the radius you want to apply to the corners
+                    // Deginie le rayon pour l'appliquer les bordures 
                     borderRadius:
-                        BorderRadius.circular(30.0), // Example radius of 20
+                        BorderRadius.circular(30.0), // rayon de 20
                     child: Image.asset(
                       'assets/icon/logo.jpg',
                       height: 200.0,
@@ -31,7 +31,7 @@ class Landing extends StatelessWidget {
                   )),
             ),
             Text(
-              Constants.appName,
+              Constants.appName, 
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontSize: 22.0,
                     color: Theme.of(context).colorScheme.secondary,
@@ -42,8 +42,7 @@ class Landing extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        // color: Theme.of(context).colorScheme.surface,
+      bottomNavigationBar: BottomAppBar(    
         elevation: 0.0,
         child: Padding(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
