@@ -350,11 +350,13 @@ class _ConversationState extends State<Conversation> {
                             child: Center(
                               child: Text(
                                 recipientUser.username![0].toUpperCase(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.w900,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium!
+                                    .copyWith(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.w900,
+                                    ),
                               ),
                             ),
                           )

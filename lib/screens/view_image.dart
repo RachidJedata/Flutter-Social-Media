@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:nurox_chat/models/post.dart';
 import 'package:nurox_chat/models/user.dart';
 import 'package:nurox_chat/utils/firebase.dart';
-import 'package:nurox_chat/widgets/indicators.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ViewImage extends StatefulWidget {
@@ -41,7 +39,8 @@ class _ViewImageState extends State<ViewImage> {
             // Image principale
             Expanded(
               child: Center(
-                child: buildImage(context), // Fonction qui construit le widget Image
+                child: buildImage(
+                    context), // Fonction qui construit le widget Image
               ),
             ),
             // Section utilisateur et like
@@ -68,7 +67,8 @@ class _ViewImageState extends State<ViewImage> {
                             const Icon(Ionicons.alarm_outline, size: 13.0),
                             const SizedBox(width: 3.0),
                             Text(
-                              timeago.format(widget.post!.timestamp!.toDate()), // Affiche le temps relatif
+                              timeago.format(widget.post!.timestamp!
+                                  .toDate()), // Affiche le temps relatif
                             ),
                           ],
                         ),
@@ -93,7 +93,8 @@ class _ViewImageState extends State<ViewImage> {
       child: ClipRRect(
           borderRadius: BorderRadius.circular(5.0), // Coins arrondis
           child: Image.asset(
-            widget.post!.mediaUrl!, // Image locale (si URL distante, utiliser Image.network)
+            widget.post!
+                .mediaUrl!, // Image locale (si URL distante, utiliser Image.network)
             height: 400.0,
             fit: BoxFit.cover,
             width: MediaQuery.of(context).size.width, // Largeur de l'écran
@@ -182,8 +183,9 @@ class _ViewImageState extends State<ViewImage> {
           return LikeButton(
             onTap: onLikeButtonTapped,
             size: 25.0,
-            circleColor:
-                CircleColor(start: Color(0xffFFC0CB), end: Color(0xffff0000)), // Couleur animation cercle
+            circleColor: CircleColor(
+                start: Color(0xffFFC0CB),
+                end: Color(0xffff0000)), // Couleur animation cercle
             bubblesColor: BubblesColor(
               dotPrimaryColor: Color(0xffFFA500),
               dotSecondaryColor: Color(0xffd8392b),
