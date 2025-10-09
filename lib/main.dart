@@ -30,34 +30,35 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
-  // 1. Initialize 'currentUserId' normally
+  // Si personne n'est connecté, currentUserId sera null
   final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
-  // 2. Declare '_userService' as a late field
+  //  Déclare un objet qui gère les événements du cycle de vie
   late final LifecycleEventHandler _userService;
 
   @override
   void initState() {
-    // initState must NOT be async
+    // On y initialise les ressources et on démarre les observations du cycle de vie.
+
     super.initState();
 
-    // 3. Initialize '_userService' inside initState where all fields are ready
+    //  Initialise ton gestionnaire d’événements avec l’ID utilisateur
     _userService = LifecycleEventHandler(currentUserId: currentUserId);
 
     WidgetsBinding.instance.addObserver(this);
 
     if (currentUserId != null) {
-      // Call async method without await. It's a fire-and-forget action.
-      // This is generally acceptable for non-critical background updates like presence.
+      // Appel asynchrone sans 'await' exécution en tâche de fond 
+      // Bonne pratique pour les mises à jour de présence non critiques
       _userService.updateOnlineStatus(currentUserId!, true);
     }
   }
 
   @override
   void dispose() {
-    // CRITICAL: Set user offline when the widget is disposed
+    //  Appelée quand le widget est retiré de l’arbre (ex. fermeture app ou déconnexion)
     if (currentUserId != null) {
-      // Call async method without await in dispose to avoid blocking
+      //  l'appel de la methode async non bloqunte sans await 
       _userService.updateOnlineStatus(currentUserId!, false);
     }
     WidgetsBinding.instance.removeObserver(this);
