@@ -1,15 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart'; // Pour interagir avec Firestore
-import 'package:flutter/cupertino.dart'; // Widgets style iOS
-import 'package:flutter/material.dart'; // Widgets Material Design
-import 'package:ionicons/ionicons.dart'; // Icônes Ionicons
-import 'package:like_button/like_button.dart'; // Widget Like animé
-import 'package:nurox_chat/models/post.dart'; // Modèle de Post
-import 'package:nurox_chat/models/user.dart'; // Modèle User
-import 'package:nurox_chat/utils/firebase.dart'; // Références Firebase (auth, collections...)
-import 'package:nurox_chat/widgets/indicators.dart'; // Widgets personnalisés d'indicateurs (non utilisé ici)
-import 'package:timeago/timeago.dart' as timeago; // Pour afficher le temps relatif (ex: "2h ago")
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:like_button/like_button.dart';
+import 'package:nurox_chat/models/post.dart';
+import 'package:nurox_chat/models/user.dart';
+import 'package:nurox_chat/utils/firebase.dart';
+import 'package:nurox_chat/widgets/indicators.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
-// Écran pour visualiser une image d'un post
 class ViewImage extends StatefulWidget {
   final PostModel? post; // Post à afficher
 
@@ -33,7 +32,7 @@ UserModel? user;
 class _ViewImageState extends State<ViewImage> {
   @override
   Widget build(BuildContext context) {
-    print("i am here now"); // Log pour le debug
+    print("i am here now");
     return Scaffold(
       appBar: AppBar(), // Barre d'application vide
       body: SafeArea(
