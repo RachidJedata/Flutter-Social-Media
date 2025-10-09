@@ -247,6 +247,7 @@ class _ConversationState extends State<Conversation> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: BottomAppBar(
+                  color: Theme.of(context).colorScheme.surface,
                   elevation: 10.0,
                   child: Container(
                     constraints: const BoxConstraints(maxHeight: 100.0),

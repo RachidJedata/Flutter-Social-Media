@@ -16,6 +16,7 @@ class Constants {
   static Color greenDark1 = const Color(0xFF0EAD69);
   static Color greenDark2 = const Color(0xFF064635);
 
+
   // Colors for theme
   static Color lightPrimary = greenLight1;
   static Color darkPrimary = greenDark2;
@@ -52,7 +53,6 @@ class Constants {
       ),
     ),
     colorScheme: ColorScheme.fromSwatch().copyWith(
-      background: lightBG,
       surface: lightBG,
       primary: greenMid,
       secondary: greenDark1,
