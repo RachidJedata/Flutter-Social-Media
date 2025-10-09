@@ -51,17 +51,19 @@ class _MyAppState extends State<MyApp> {
       providers: providers,
       child: Consumer<ThemeProvider>(
         // Permet l'ecout du provider theme
-        builder: (context, ThemeProvider themeProvider, Widget? child) {     
+        builder: (context, ThemeProvider themeProvider, Widget? child) {
           return MaterialApp(
             title: Constants.appName,
-            debugShowCheckedModeBanner: false, 
+            debugShowCheckedModeBanner: false,
             theme: themeData(
               themeProvider.dark ? Constants.darkTheme : Constants.lightTheme,
             ),
-            home: StreamBuilder<User?>(   // l'ecout en temps reel de l'etat de l'utilisateur 
+            home: StreamBuilder<User?>(
+              // l'ecout en temps reel de l'etat de l'utilisateur
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: ((BuildContext context, AsyncSnapshot<User?> snapshot) {
-                if (snapshot.hasData) {  // Retourne true s'il contient data et false sinon 
+                if (snapshot.hasData) {
+                  // Retourne true s'il contient data et false sinon
                   return TabScreen();
                 } else
                   return Landing();
@@ -76,7 +78,7 @@ class _MyAppState extends State<MyApp> {
   ThemeData themeData(ThemeData theme) {
     return theme.copyWith(
       textTheme: GoogleFonts.nunitoTextTheme(
-        theme.textTheme,   // l'ajour du font au texte 
+        theme.textTheme, // l'ajour du font au texte
       ),
     );
   }
