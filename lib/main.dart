@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:nurox_chat/components/life_cycle_event_handler.dart';
 import 'package:nurox_chat/landing/landing_page.dart';
 import 'package:nurox_chat/screens/mainscreen.dart';
-import 'package:nurox_chat/services/user_service.dart';
 import 'package:nurox_chat/utils/constants.dart';
 import 'package:nurox_chat/utils/providers.dart';
 import 'package:nurox_chat/view_models/theme/theme_view_model.dart';
@@ -30,18 +29,39 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState(); //
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  // 1. Initialize 'currentUserId' normally
+  final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
+
+  // 2. Declare '_userService' as a late field
+  late final LifecycleEventHandler _userService;
+
   @override
   void initState() {
+    // initState must NOT be async
     super.initState();
-    WidgetsBinding.instance.addObserver(
-      //Observer l'etat de l'application
-      LifecycleEventHandler(
-        //Mettre a jour l'etat de l'utilisateur
-        detachedCallBack: () => UserService().setUserStatus(false),
-        resumeCallBack: () => UserService().setUserStatus(true),
-      ),
-    );
+
+    // 3. Initialize '_userService' inside initState where all fields are ready
+    _userService = LifecycleEventHandler(currentUserId: currentUserId);
+
+    WidgetsBinding.instance.addObserver(this);
+
+    if (currentUserId != null) {
+      // Call async method without await. It's a fire-and-forget action.
+      // This is generally acceptable for non-critical background updates like presence.
+      _userService.updateOnlineStatus(currentUserId!, true);
+    }
+  }
+
+  @override
+  void dispose() {
+    // CRITICAL: Set user offline when the widget is disposed
+    if (currentUserId != null) {
+      // Call async method without await in dispose to avoid blocking
+      _userService.updateOnlineStatus(currentUserId!, false);
+    }
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
