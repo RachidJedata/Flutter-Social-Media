@@ -6,8 +6,4 @@ class FileUtils {
     String extension = fileNameSplit.last;
     return extension;
   }
-
-  // static String getFileSize(File file){
-  //   return (file.lengthSync() / (1024 * 1024)).toStringAsFixed(1);
-  // }
 }
