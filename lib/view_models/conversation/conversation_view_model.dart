@@ -1,11 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart'; // Still needed for constants/types
-// Assuming ImagePickerService is available here if you want to use it
-// import 'package:nurox_chat/services/image_picker_service.dart';
+import 'package:image_picker/image_picker.dart'; 
 import 'package:nurox_chat/models/message.dart';
 import 'package:nurox_chat/services/chat_service.dart';
 
@@ -14,7 +11,7 @@ class ConversationViewModel extends ChangeNotifier {
   ChatService chatService = ChatService();
   bool uploadingImage = false;
 
-  // ✅ NEW: Use a local instance of ImagePicker for simplicity in this small class,
+  //  NEW: Use a local instance of ImagePicker for simplicity in this small class,
   // but use the correct methods.
   final ImagePicker _picker = ImagePicker();
 

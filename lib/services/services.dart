@@ -5,8 +5,7 @@ import 'package:nurox_chat/utils/file_utils.dart';
 import 'package:nurox_chat/utils/firebase.dart';
 
 abstract class Service {
-
-  //function to upload images to firebase storage and retrieve the url.
+  // fonction pour téléverser des images dans Firebase Storage et récupérer l’URL.
   Future<String> uploadImage(Reference ref, File file) async {
     String ext = FileUtils.getFileExtension(file);
     Reference storageReference = ref.child("${uuid.v4()}.$ext");

@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
-// import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_3.dart';
 import 'package:nurox_chat/components/text_time.dart';
 import 'package:nurox_chat/models/enum/message_type.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -26,6 +24,7 @@ class ChatBubbleWidget extends StatefulWidget {
 }
 
 class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
+  // une fontion qui definie le couleur pour moi ou mon contact
   Color? chatBubbleColor() {
     if (widget.isMe!) {
       return Theme.of(context).colorScheme.secondary;
@@ -38,6 +37,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
     }
   }
 
+  //qui determine le couleur en basant par le sombre
   Color? chatBubbleReplyColor() {
     if (Theme.of(context).brightness == Brightness.dark) {
       return Colors.grey[600];
@@ -50,17 +50,6 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
   Widget build(BuildContext context) {
     final align =
         widget.isMe! ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-    final radius = widget.isMe!
-        ? BorderRadius.only(
-            topLeft: Radius.circular(5.0),
-            bottomLeft: Radius.circular(5.0),
-            bottomRight: Radius.circular(10.0),
-          )
-        : BorderRadius.only(
-            topRight: Radius.circular(5.0),
-            bottomLeft: Radius.circular(10.0),
-            bottomRight: Radius.circular(5.0),
-          );
     return Column(
       crossAxisAlignment: align,
       children: <Widget>[
@@ -93,8 +82,8 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
                               : Theme.of(context).textTheme.titleLarge!.color,
                         ),
                       )
-                    : CachedNetworkImage(
-                        imageUrl: "${widget.message}",
+                    : Image.asset(
+                        "${widget.message}",
                         height: 200,
                         width: MediaQuery.of(context).size.width / 1.3,
                         fit: BoxFit.cover,

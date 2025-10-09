@@ -12,7 +12,7 @@ import 'package:uuid/uuid.dart';
 class PostService extends Service {
   String postId = Uuid().v4();
 
-//uploads profile picture to the users collection
+//uploads profile image vers user document (changes le path)
   uploadProfilePicture(File image, User user) async {
     String link = await uploadImage(profilePic, image);
     var ref = usersRef.doc(user.uid);
@@ -34,7 +34,7 @@ class PostService extends Service {
     user = UserModel.fromJson(
       doc.data() as Map<String, dynamic>,
     );
-  
+
     var ref = postRef.doc();
     // print("this is the username " + user!.username!);
     ref.set({

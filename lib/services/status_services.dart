@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nurox_chat/models/status.dart';
@@ -13,6 +12,7 @@ class StatusService {
   String statusId = const Uuid().v1();
   UserService userService = UserService();
 
+  //pour snackBar afficher les erreurs
   void showSnackBar(String value, context) {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
@@ -46,6 +46,4 @@ class StatusService {
     String imageUrl = await storageReference.getDownloadURL();
     return imageUrl;
   }
-
-
 }
