@@ -1,13 +1,13 @@
-import 'package:animations/animations.dart'; // Pour les transitions animées entre pages
-import 'package:flutter/cupertino.dart';       // Widgets style iOS
-import 'package:flutter/material.dart';       // Widgets Material Design
-import 'package:ionicons/ionicons.dart';      // Icônes Ionicons
-import 'package:nurox_chat/components/fab_container.dart'; // Widget personnalisé pour le bouton flottant
-import 'package:nurox_chat/pages/notification.dart';       // Page Notifications
-import 'package:nurox_chat/pages/profile.dart';            // Page Profil
-import 'package:nurox_chat/pages/search.dart';             // Page Recherche
-import 'package:nurox_chat/pages/feeds.dart';              // Page Home / Feeds
-import 'package:nurox_chat/utils/firebase.dart';          // Références Firebase (auth, notifications...)
+import 'package:animations/animations.dart'; 
+import 'package:flutter/cupertino.dart';       
+import 'package:flutter/material.dart';       
+import 'package:ionicons/ionicons.dart';     
+import 'package:nurox_chat/components/fab_container.dart'; 
+import 'package:nurox_chat/pages/notification.dart';       
+import 'package:nurox_chat/pages/profile.dart';           
+import 'package:nurox_chat/pages/search.dart';             
+import 'package:nurox_chat/pages/feeds.dart';              
+import 'package:nurox_chat/utils/firebase.dart';          
 
 class TabScreen extends StatefulWidget {
   @override

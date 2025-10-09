@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart'; // Widgets style iOS (Cupertino)
-import 'package:flutter/material.dart';  // Widgets Material Design
-import 'package:provider/provider.dart'; // Pour la gestion d'état avec Provider
-import 'package:nurox_chat/view_models/theme/theme_view_model.dart'; // ViewModel pour gérer le thème (Dark/Light)
-
+import 'package:flutter/cupertino.dart'; 
+import 'package:flutter/material.dart';  
+import 'package:provider/provider.dart'; 
+import 'package:nurox_chat/view_models/theme/theme_view_model.dart'; 
 class Setting extends StatefulWidget {
   @override
   _SettingState createState() => _SettingState(); // Création de l'état
