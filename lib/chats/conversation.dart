@@ -29,38 +29,42 @@ class _ConversationState extends State<Conversation> {
   ScrollController scrollController = ScrollController();
   TextEditingController messageController = TextEditingController();
   bool isFirst = false;
+  // Local state to hold the resolved chatId once it's created or verified
   String? chatId;
 
   @override
   void initState() {
     super.initState();
-    // Use WidgetsBinding to ensure context is available and avoid the listener calling setTyping before build
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // We use listen: false here since we only update state
       final viewModel = Provider.of<UserViewModel>(context, listen: false);
       viewModel.setUser();
     });
 
     scrollController.addListener(() {
+      // Unfocusing the keyboard also triggers setTyping(false) via focusNode listener
       focusNode.unfocus();
     });
 
     if (widget.chatId == 'newChat') {
       isFirst = true;
       chatId =
-          null; // Set initial chatId to null until the first message is sent
+          null; // Initial chatId is null until the first message is sent and chat is created
     } else {
       chatId = widget.chatId;
     }
 
+    // Listener for focus changes to handle typing status when focus changes
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
+        // Only set typing true if text is actually present
         setTyping(messageController.text.isNotEmpty);
       } else {
         setTyping(false);
       }
     });
 
+    // Listener for text changes to update typing status in real-time
     messageController.addListener(() {
       setTyping(messageController.text.isNotEmpty);
     });
@@ -68,15 +72,17 @@ class _ConversationState extends State<Conversation> {
 
   @override
   void dispose() {
+    // Crucial: Set typing to false when the conversation screen is disposed
+    setTyping(false);
     focusNode.dispose();
     scrollController.dispose();
     messageController.dispose();
     super.dispose();
   }
 
-  // FIX 1: Corrected setTyping to use appropriate Provider access
+  // FIX 1: Corrected setTyping to use the local, resolved 'chatId'
   setTyping(bool typing) {
-    // Only proceed if context allows access (i.e., not during disposal)
+    // Only proceed if mounted AND chatId is resolved (i.e., not null)
     if (!mounted || chatId == null) return;
 
     // Use context.read for non-listening access
@@ -84,7 +90,8 @@ class _ConversationState extends State<Conversation> {
     final convViewModel = context.read<ConversationViewModel>();
 
     if (user != null) {
-      convViewModel.setUserTyping(widget.chatId, user, typing);
+      // Use the resolved chatId instead of widget.chatId
+      convViewModel.setUserTyping(chatId!, user, typing);
     }
   }
 
@@ -109,7 +116,8 @@ class _ConversationState extends State<Conversation> {
     } else {
       msgContent = messageController.text.trim();
       messageController.clear();
-      // Ensure the keyboard is still hidden after clearing the text if needed
+      // Ensure typing status is turned off immediately after sending text
+      setTyping(false);
       focusNode.unfocus();
     }
 
@@ -137,25 +145,13 @@ class _ConversationState extends State<Conversation> {
         chatId = newChatId; // Update local chatId
       });
 
-      // Update Firebase chatRef with users map and set reads/typing maps
-      // The `getUser` function returns a concatenated string ID,
-      // which seems incorrect for storing a list of users,
-      // but let's assume it's meant to store the user IDs themselves as a List.
-      // If the intent is to store a list of user IDs:
+      // Initialize the chat document fields (typing/reads/users)
       chatRef.doc(newChatId).set({
         "users": [firebaseAuth.currentUser!.uid, widget.userId],
-        "lastTextTime": Timestamp.now(), // Added this for sorting in Chats view
-        "reads": {}, // Initialize reads map
-        "typing": {}, // Initialize typing map
+        "lastTextTime": Timestamp.now(),
+        "reads": {},
+        "typing": {},
       }, SetOptions(merge: true));
-
-      // After the first message successfully creates the chat document,
-      // the existing sendMessage method should be called to add the message
-      // to the new 'messages' subcollection.
-      // NOTE: sendFirstMessage might already handle this, but based on your
-      // original code structure, you seem to call it twice. Let's trust
-      // `sendFirstMessage` handles the initial message document creation and
-      // subcollection creation, but we explicitly set the chat document here.
     } else if (chatId != null) {
       // --- Handle Subsequent Messages ---
       viewModel.sendMessage(chatId!, message);
@@ -171,13 +167,12 @@ class _ConversationState extends State<Conversation> {
 
   @override
   Widget build(BuildContext context) {
-    // FIX 3: Fetch the current user once using context.watch for necessary rebuilds,
-    // or context.read if only the UID is needed, but we need the UserModel here.
+    // Fetch the current user once using context.watch for necessary rebuilds,
     final userViewModel = Provider.of<UserViewModel>(context);
     userViewModel.setUser();
     final UserModel? currentUser = userViewModel.user;
 
-    // FIX 4: Handle the case where the current user is not yet loaded
+    // Handle the case where the current user is not yet loaded
     if (currentUser == null) {
       return Scaffold(body: Center(child: circularProgress(context)));
     }
@@ -193,8 +188,7 @@ class _ConversationState extends State<Conversation> {
             ),
             elevation: 0.0,
             titleSpacing: 0,
-            title: buildUserName(
-                currentUser), // Pass current user for profile navigation
+            title: buildUserName(currentUser),
           ),
           body: Column(
             children: [
@@ -207,7 +201,6 @@ class _ConversationState extends State<Conversation> {
                       return const Center(child: Text("Say Hello!"));
                     }
 
-                    // FIX 6: Use reversed.toList() or map directly to avoid performance hit and redundancy
                     final messages = snapshot.data!.docs;
 
                     // Call setReadCount on every data update
@@ -220,10 +213,8 @@ class _ConversationState extends State<Conversation> {
                       itemCount: messages.length,
                       reverse: true, // Show newest messages at the bottom
                       itemBuilder: (BuildContext context, int index) {
-                        // FIX 7: Use messages[index] directly since ListView.builder is reversed
                         final messageDoc = messages[index];
 
-                        // FIX 8: Correctly cast the data
                         final messageData =
                             messageDoc.data() as Map<String, dynamic>?;
 
@@ -231,8 +222,6 @@ class _ConversationState extends State<Conversation> {
 
                         Message message = Message.fromJson(messageData);
 
-                        // FIX 9: Color logic is handled by ChatBubbleWidget,
-                        // just ensure isMe is correct
                         return ChatBubbleWidget(
                           message: message.content ?? '',
                           time: message.time!,
@@ -315,90 +304,108 @@ class _ConversationState extends State<Conversation> {
     );
   }
 
-  // FIX 11: Corrected StreamBuilder and added type safety
+  // FIX 11: Corrected StreamBuilder to use nested streams for Online Status (from User Doc) and Typing Status (from Chat Doc)
   Widget buildUserName(UserModel currentUser) {
+    // Stream 1: Recipient's User Document (for online status)
     return StreamBuilder<DocumentSnapshot>(
       stream: usersRef.doc(widget.userId).snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.data!.exists) {
-          final documentSnapshot = snapshot.data!;
-          final recipientUser = UserModel.fromJson(
-            documentSnapshot.data() as Map<String, dynamic>,
-          );
-
-          final typingData = (documentSnapshot.data() as Map?)?['typing'] ?? {};
-          final isTyping = typingData[widget.userId] == true;
-
-          return InkWell(
-            onTap: () {
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (_) => Profile(profileId: recipientUser.id!),
-                ),
-              );
-            },
-            child: Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                  child: Hero(
-                    tag: recipientUser.email ?? 'default_tag',
-                    child: recipientUser.photoUrl!.isEmpty
-                        ? CircleAvatar(
-                            radius: 20.0, // Reduced size for app bar
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
-                            child: Center(
-                              child: Text(
-                                recipientUser.username![0].toUpperCase(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(
-                                      fontSize: 15.0,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                              ),
-                            ),
-                          )
-                        : CircleAvatar(
-                            radius: 20.0,
-                            backgroundColor: Colors.transparent,
-                            backgroundImage:
-                                AssetImage(recipientUser.photoUrl!),
-                          ),
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        recipientUser.username ?? 'User',
-                        style:
-                            Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15.0,
-                                ),
-                      ),
-                      const SizedBox(height: 5.0),
-                      Text(
-                        _buildOnlineText(recipientUser, isTyping),
-                        style:
-                            Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 11,
-                                ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        } else {
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
           return const Center(child: Text("Loading..."));
         }
+
+        final recipientUser = UserModel.fromJson(
+          userSnapshot.data!.data() as Map<String, dynamic>,
+        );
+
+        // Stream 2: Chat Document (for typing status)
+        // We need the resolved chatId here, which may be null for a new chat.
+        return StreamBuilder<DocumentSnapshot>(
+          stream: (chatId != null) ? chatRef.doc(chatId!).snapshots() : null,
+          builder: (context, chatSnapshot) {
+            // Default to not typing if chat document isn't available or loading
+            bool isTyping = false;
+
+            if (chatSnapshot.hasData && chatSnapshot.data!.exists) {
+              final chatData =
+                  chatSnapshot.data!.data() as Map<String, dynamic>?;
+              final typingData =
+                  chatData?['typing'] as Map<String, dynamic>? ?? {};
+
+              // Check if the recipient (widget.userId) is typing in THIS chat
+              isTyping = typingData[widget.userId] == true;
+            }
+
+            return InkWell(
+              onTap: () {
+                Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (_) => Profile(profileId: recipientUser.id!),
+                  ),
+                );
+              },
+              child: Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Hero(
+                      tag: recipientUser.email ?? 'default_tag',
+                      child: recipientUser.photoUrl!.isEmpty
+                          ? CircleAvatar(
+                              radius: 20.0, // Reduced size for app bar
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              child: Center(
+                                child: Text(
+                                  recipientUser.username![0].toUpperCase(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        fontSize: 15.0,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                ),
+                              ),
+                            )
+                          : CircleAvatar(
+                              radius: 20.0,
+                              backgroundColor: Colors.transparent,
+                              backgroundImage:
+                                  AssetImage(recipientUser.photoUrl!),
+                            ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          recipientUser.username ?? 'User',
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15.0,
+                                  ),
+                        ),
+                        const SizedBox(height: 5.0),
+                        Text(
+                          // Use the combined logic here
+                          _buildOnlineText(recipientUser, isTyping),
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 11,
+                                  ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
       },
     );
   }
@@ -420,7 +427,7 @@ class _ConversationState extends State<Conversation> {
   showPhotoOptions(ConversationViewModel viewModel, var user) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
           Radius.circular(10.0),
         ),
@@ -430,15 +437,17 @@ class _ConversationState extends State<Conversation> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              title: Text("Camera"),
+              title: const Text("Camera"),
               onTap: () {
                 sendMessage(viewModel, user, imageType: 0, isImage: true);
+                Navigator.pop(context); // Close the sheet
               },
             ),
             ListTile(
-              title: Text("Gallery"),
+              title: const Text("Gallery"),
               onTap: () {
                 sendMessage(viewModel, user, imageType: 1, isImage: true);
+                Navigator.pop(context); // Close the sheet
               },
             ),
           ],
