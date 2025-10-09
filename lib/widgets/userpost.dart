@@ -17,41 +17,43 @@ import 'package:nurox_chat/utils/firebase.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class UserPost extends StatelessWidget {
-  final PostModel? post;
+  final PostModel? post; // Le post à afficher
 
   UserPost({this.post});
 
-  final DateTime timestamp = DateTime.now();
+  final DateTime timestamp = DateTime.now(); // Timestamp courant (pas utilisé ici)
 
+  // Retourne l'ID de l'utilisateur actuel
   currentUserId() {
     return firebaseAuth.currentUser!.uid;
   }
 
-  final PostService services = PostService();
+  final PostService services = PostService(); // Service pour gérer les posts et notifications
 
   @override
   Widget build(BuildContext context) {
     return CustomCard(
-      onTap: () {},
+      onTap: () {}, // Action à l'appui sur la carte (vide ici)
       borderRadius: BorderRadius.circular(10.0),
       child: OpenContainer(
-        transitionType: ContainerTransitionType.fadeThrough,
+        transitionType: ContainerTransitionType.fadeThrough, // Animation lors de l'ouverture
         openBuilder: (BuildContext context, VoidCallback _) {
-          return ViewImage(post: post);
+          return ViewImage(post: post); // Page qui affiche l'image en plein écran
         },
-        closedElevation: 0.0,
+        closedElevation: 0.0, // Élévation de la carte fermée
         closedShape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(10.0),
           ),
         ),
-        onClosed: (v) {},
-        closedColor: Theme.of(context).cardColor,
+        onClosed: (v) {}, // Callback quand le container est fermé
+        closedColor: Theme.of(context).cardColor, // Couleur de fond
         closedBuilder: (BuildContext context, VoidCallback openContainer) {
           return Stack(
             children: [
               Column(
                 children: [
+                  // Affichage de l'image du post
                   ClipRRect(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10.0),
@@ -71,15 +73,17 @@ class UserPost extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Row pour like et commentaire
                         Padding(
                           padding: const EdgeInsets.only(left: 0.0),
                           child: Row(
                             children: [
-                              buildLikeButton(),
+                              buildLikeButton(), // Bouton Like animé
                               SizedBox(width: 5.0),
                               InkWell(
                                 borderRadius: BorderRadius.circular(10.0),
                                 onTap: () {
+                                  // Navigation vers la page des commentaires
                                   Navigator.of(context).push(
                                     CupertinoPageRoute(
                                       builder: (_) => Comments(post: post),
@@ -95,6 +99,7 @@ class UserPost extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 5.0),
+                        // Row pour nombre de likes et commentaires
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,6 +108,7 @@ class UserPost extends StatelessWidget {
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 0.0),
                                 child: StreamBuilder(
+                                  // Stream des likes
                                   stream: likesRef
                                       .where('postId', isEqualTo: post!.postId)
                                       .snapshots(),
@@ -122,6 +128,7 @@ class UserPost extends StatelessWidget {
                             ),
                             SizedBox(width: 5.0),
                             StreamBuilder(
+                              // Stream des commentaires
                               stream: commentRef
                                   .doc(post!.postId!)
                                   .collection("comments")
@@ -140,6 +147,7 @@ class UserPost extends StatelessWidget {
                             ),
                           ],
                         ),
+                        // Affichage de la description si elle existe
                         Visibility(
                           visible: post!.description != null &&
                               post!.description.toString().isNotEmpty,
@@ -159,6 +167,7 @@ class UserPost extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 3.0),
+                        // Affichage du timestamp sous forme relative
                         Padding(
                           padding: const EdgeInsets.all(3.0),
                           child: Text(
@@ -166,13 +175,12 @@ class UserPost extends StatelessWidget {
                             style: TextStyle(fontSize: 10.0),
                           ),
                         ),
-                        // SizedBox(height: 5.0),
                       ],
                     ),
                   )
                 ],
               ),
-              buildUser(context),
+              buildUser(context), // Widget qui affiche l'utilisateur
             ],
           );
         },
@@ -180,8 +188,10 @@ class UserPost extends StatelessWidget {
     );
   }
 
+  // Bouton like animé
   buildLikeButton() {
     return StreamBuilder(
+      // Vérifie si l'utilisateur a déjà liké ce post
       stream: likesRef
           .where('postId', isEqualTo: post!.postId)
           .where('userId', isEqualTo: currentUserId())
@@ -190,33 +200,9 @@ class UserPost extends StatelessWidget {
         if (snapshot.hasData) {
           List<QueryDocumentSnapshot> docs = snapshot.data?.docs ?? [];
 
-          ///replaced this with an animated like button
-          // return IconButton(
-          //   onPressed: () {
-          //     if (docs.isEmpty) {
-          //       likesRef.add({
-          //         'userId': currentUserId(),
-          //         'postId': post!.postId,
-          //         'dateCreated': Timestamp.now(),
-          //       });
-          //       addLikesToNotification();
-          //     } else {
-          //       likesRef.doc(docs[0].id).delete();
-          //       services.removeLikeFromNotification(
-          //           post!.ownerId!, post!.postId!, currentUserId());
-          //     }
-          //   },
-          //   icon: docs.isEmpty
-          //       ? Icon(
-          //           CupertinoIcons.heart,
-          //         )
-          //       : Icon(
-          //           CupertinoIcons.heart_fill,
-          //           color: Colors.red,
-          //         ),
-          // );
           Future<bool> onLikeButtonTapped(bool isLiked) async {
             if (docs.isEmpty) {
+              // Ajouter un like
               likesRef.add({
                 'userId': currentUserId(),
                 'postId': post!.postId,
@@ -225,6 +211,7 @@ class UserPost extends StatelessWidget {
               addLikesToNotification();
               return !isLiked;
             } else {
+              // Supprimer le like
               likesRef.doc(docs[0].id).delete();
               services.removeLikeFromNotification(
                   post!.ownerId!, post!.postId!, currentUserId());
@@ -260,6 +247,7 @@ class UserPost extends StatelessWidget {
     );
   }
 
+  // Ajout de notification de like si ce n'est pas le propriétaire du post
   addLikesToNotification() async {
     bool isNotMe = currentUserId() != post!.ownerId;
 
@@ -278,6 +266,7 @@ class UserPost extends StatelessWidget {
     }
   }
 
+  // Widget pour afficher le nombre de likes
   buildLikesCount(BuildContext context, int count) {
     return Padding(
       padding: const EdgeInsets.only(left: 7.0),
@@ -291,6 +280,7 @@ class UserPost extends StatelessWidget {
     );
   }
 
+  // Widget pour afficher le nombre de commentaires
   buildCommentsCount(BuildContext context, int count) {
     return Padding(
       padding: const EdgeInsets.only(top: 0.5),
@@ -301,6 +291,7 @@ class UserPost extends StatelessWidget {
     );
   }
 
+  // Widget pour afficher l'utilisateur du post
   buildUser(BuildContext context) {
     bool isMe = currentUserId() == post!.ownerId;
     return StreamBuilder(
@@ -311,7 +302,7 @@ class UserPost extends StatelessWidget {
           UserModel user =
               UserModel.fromJson(snap.data() as Map<String, dynamic>);
           return Visibility(
-            visible: !isMe,
+            visible: !isMe, // N'affiche pas si c'est l'utilisateur actuel
             child: Align(
               alignment: Alignment.topCenter,
               child: Container(
@@ -330,6 +321,7 @@ class UserPost extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        // Avatar de l'utilisateur
                         user.photoUrl!.isEmpty
                             ? CircleAvatar(
                                 radius: 20.0,
@@ -352,6 +344,7 @@ class UserPost extends StatelessWidget {
                                 backgroundColor: Colors.transparent,
                               ),
                         SizedBox(width: 5.0),
+                        // Nom et localisation
                         Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,6 +380,7 @@ class UserPost extends StatelessWidget {
     );
   }
 
+  // Navigation vers le profil
   showProfile(BuildContext context, {String? profileId}) {
     Navigator.push(
       context,

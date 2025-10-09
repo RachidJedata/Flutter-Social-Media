@@ -1,10 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:nurox_chat/models/user.dart';
-import 'package:nurox_chat/posts/story/status_view.dart';
-import 'package:nurox_chat/utils/firebase.dart';
-import 'package:nurox_chat/widgets/indicators.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; 
+import 'package:flutter/material.dart'; 
+import 'package:nurox_chat/models/user.dart'; 
+import 'package:nurox_chat/posts/story/status_view.dart'; 
+import 'package:nurox_chat/utils/firebase.dart'; 
+import 'package:nurox_chat/widgets/indicators.dart'; 
 
+// Widget principal pour afficher les stories
 class StoryWidget extends StatelessWidget {
   const StoryWidget({Key? key}) : super(key: key);
 
@@ -16,50 +17,50 @@ class StoryWidget extends StatelessWidget {
       child: StreamBuilder<QuerySnapshot>(
         stream: storiesIcanSeeStream('${firebaseAuth.currentUser!.uid}'),
         builder: (context, snapshot) {
+          // Affichage d'un loader si la connexion est en attente
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: circularProgress(context));
           }
 
+          // Gestion des erreurs
           if (snapshot.hasError) {
             return Center(
                 child: Text('Error loading stories: ${snapshot.error}'));
           }
 
+          // Aucun document de story disponible
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            // If no stories are available, return minimal height.
             return const SizedBox(height: 1.0);
           }
 
-          // 1. Get all documents from the stream
+          // 1. Récupération de tous les documents
           List<DocumentSnapshot> allStatusDocs = snapshot.data!.docs;
 
-          // 2. 🚨 KEY CORRECTION: Extract and de-duplicate the 'userId' (ownerId) 🚨
-          // We use a Set to automatically handle de-duplication.
+          // 2. Extraction et déduplication des userId (propriétaires des stories)
           Set<String> uniqueOwnerIds = {};
 
           for (var doc in allStatusDocs) {
-            // Safely extract the 'userId' field
             String? ownerId;
             try {
-              // Note: Using doc['userId'] is often safer than doc.get('userId')
-              ownerId = doc['userId'] as String?;
+              ownerId = doc['userId'] as String?; // Extraction sécurisée
             } catch (_) {
-              // Ignore documents that are missing the 'userId' field
+              // Ignorer les documents sans userId
             }
 
             if (ownerId != null) {
-              uniqueOwnerIds.add(ownerId);
+              uniqueOwnerIds.add(ownerId); // Ajout à l'ensemble pour déduplication
             }
           }
 
-          // 3. Convert the Set back to a List for use in ListView.builder
+          // Conversion en liste pour ListView.builder
           List<String> storyOwnerIds = uniqueOwnerIds.toList();
 
-          // If after de-duplication we have no owners (e.g., all docs were corrupt), handle it.
+          // Si aucune story valide après déduplication
           if (storyOwnerIds.isEmpty) {
             return const SizedBox(height: 1.0);
           }
 
+          // Affichage de la liste horizontale des stories
           return Container(
             height: 100.0,
             padding: const EdgeInsets.only(left: 5.0, right: 5.0),
@@ -69,13 +70,9 @@ class StoryWidget extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               physics: const AlwaysScrollableScrollPhysics(),
               itemBuilder: (BuildContext context, int index) {
-                // Get the single, unique owner ID for this index
                 final String storyOwnerId = storyOwnerIds[index];
-
-                // Pass only the necessary Owner ID and an optional index (if needed for list keying)
-                return _buildStatusAvatar(
-                  storyOwnerId,
-                );
+                // Construction de l'avatar et du nom utilisateur
+                return _buildStatusAvatar(storyOwnerId);
               },
             ),
           );
@@ -84,16 +81,14 @@ class StoryWidget extends StatelessWidget {
     );
   }
 
-  // Helper method to build the status avatar and user details (no change needed here)
-  Widget _buildStatusAvatar(
-    String storyOwner,
-  ) {
-    // 4. Fetch the user's details for the avatar image and username
+  // Helper method: construit l'avatar et le nom de l'utilisateur pour la story
+  Widget _buildStatusAvatar(String storyOwner) {
     return StreamBuilder<DocumentSnapshot>(
-      stream: usersRef.doc(storyOwner).snapshots(),
+      stream: usersRef.doc(storyOwner).snapshots(), // Récupération des infos utilisateur
       builder: (context, snapshot) {
+        // Si pas de données utilisateur, retourner un widget vide
         if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const SizedBox.shrink(); // Hide if user data is missing
+          return const SizedBox.shrink();
         }
 
         DocumentSnapshot documentSnapshot = snapshot.data!;
@@ -106,6 +101,7 @@ class StoryWidget extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
+                  // Navigation vers l'écran complet du statut
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => StatusScreen(
@@ -123,7 +119,7 @@ class StoryWidget extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: const [
                       BoxShadow(
-                        color: Colors.black12, // Using a simple shadow
+                        color: Colors.black12,
                         offset: Offset(0.0, 0.0),
                         blurRadius: 2.0,
                         spreadRadius: 0.0,
@@ -136,7 +132,7 @@ class StoryWidget extends StatelessWidget {
                       radius: 30.0,
                       backgroundColor: Colors.transparent,
                       backgroundImage: AssetImage(
-                        user.photoUrl!,
+                        user.photoUrl!, // Image de profil de l'utilisateur
                       ),
                     ),
                   ),
@@ -144,12 +140,12 @@ class StoryWidget extends StatelessWidget {
               ),
               const SizedBox(height: 4.0),
               Text(
-                user.username!,
+                user.username!, // Nom de l'utilisateur
                 style: const TextStyle(
                   fontSize: 10.0,
                   fontWeight: FontWeight.bold,
                 ),
-                overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis, // Coupe le texte trop long
               )
             ],
           ),
@@ -158,9 +154,9 @@ class StoryWidget extends StatelessWidget {
     );
   }
 
-  // The only stream needed for the main status list
+  // Stream des stories visibles par l'utilisateur actuel
   Stream<QuerySnapshot> storiesIcanSeeStream(String uid) {
-    // Fetches documents (status entries) where the user is listed in whoCanSee
     return statusRef.where('whoCanSee', arrayContains: uid).snapshots();
+    // Retourne uniquement les documents où l'utilisateur est dans le champ 'whoCanSee'
   }
 }
