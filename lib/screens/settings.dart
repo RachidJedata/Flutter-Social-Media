@@ -1,76 +1,72 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:nurox_chat/view_models/theme/theme_view_model.dart';
+import 'package:flutter/cupertino.dart'; // Widgets style iOS (Cupertino)
+import 'package:flutter/material.dart';  // Widgets Material Design
+import 'package:provider/provider.dart'; // Pour la gestion d'état avec Provider
+import 'package:nurox_chat/view_models/theme/theme_view_model.dart'; // ViewModel pour gérer le thème (Dark/Light)
 
 class Setting extends StatefulWidget {
   @override
-  _SettingState createState() => _SettingState();
+  _SettingState createState() => _SettingState(); // Création de l'état
 }
 
 class _SettingState extends State<Setting> {
   @override
   Widget build(BuildContext context) {
-    // Get the current theme's TextTheme once
+    // Récupère le TextTheme actuel pour utiliser les styles du thème
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(
           onTap: () {
-            Navigator.pop(context);
+            Navigator.pop(context); // Retour à l'écran précédent
           },
-          child: Icon(Icons.keyboard_backspace),
+          child: Icon(Icons.keyboard_backspace), // Icône de retour
         ),
-        // NOTE: The title style is often best left to the AppBarTheme set in Constants
         title: Text(
-          "Settings",
-          // Fix 1: Removed explicit TextStyle() to rely on AppBarTheme.titleTextStyle
-          // or use: style: textTheme.titleLarge,
+          "Settings", // Titre de l'AppBar
         ),
       ),
-      // NOTE: Scaffold background color is better set using Theme.of(context).scaffoldBackgroundColor
+      // Corps de la page avec padding
       body: Padding(
         padding: EdgeInsets.all(10.0),
         child: ListView(
           children: <Widget>[
+            // Première option : About
             ListTile(
               title: Text(
                 "About",
-                // Fix 2: Use the theme's title style and copy to apply w900,
-                // which will respect the text color set in your darkTheme's textTheme.
                 style: textTheme.titleMedium!.copyWith(
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w900, // Titre en gras
                 ),
               ),
               subtitle: Text(
                 "A Fully Functional Social Media Application Made by ISIC Team",
-                // Fix 3: Rely on the default subtitle style from the theme
-                style: textTheme.titleSmall,
+                style: textTheme.titleSmall, // Sous-titre avec style du thème
               ),
-              trailing: Icon(Icons.error),
+              trailing: Icon(Icons.error), // Icône à droite
             ),
-            Divider(),
+            Divider(), // Ligne séparatrice
+
+            // Deuxième option : Dark Mode
             ListTile(
               title: Text(
                 "Dark Mode",
-                // Fix 4: Apply w900 by copying the theme's default style
                 style: textTheme.titleMedium!.copyWith(
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w900, // Titre en gras
                 ),
               ),
               subtitle: Text(
                 "Use the dark mode",
-                // Fix 5: Rely on the default subtitle style from the theme
-                style: textTheme.titleSmall,
+                style: textTheme.titleSmall, // Sous-titre avec style du thème
               ),
               trailing: Consumer<ThemeProvider>(
+                // Ecouteur du ThemeProvider pour basculer entre Dark et Light mode
                 builder: (context, ThemeProvider notifier, child) => CupertinoSwitch(
                   onChanged: (val) {
-                    notifier.toggleTheme();
+                    notifier.toggleTheme(); // Appelle la fonction pour changer le thème
                   },
-                  value: notifier.dark,
-                  activeTrackColor: Theme.of(context).colorScheme.secondary,
+                  value: notifier.dark, // Etat actuel du thème
+                  activeTrackColor: Theme.of(context).colorScheme.secondary, // Couleur active
                 ),
               ),
             ),

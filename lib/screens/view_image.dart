@@ -1,45 +1,51 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
-import 'package:like_button/like_button.dart';
-import 'package:nurox_chat/models/post.dart';
-import 'package:nurox_chat/models/user.dart';
-import 'package:nurox_chat/utils/firebase.dart';
-import 'package:nurox_chat/widgets/indicators.dart';
-import 'package:timeago/timeago.dart' as timeago;
+import 'package:cloud_firestore/cloud_firestore.dart'; // Pour interagir avec Firestore
+import 'package:flutter/cupertino.dart'; // Widgets style iOS
+import 'package:flutter/material.dart'; // Widgets Material Design
+import 'package:ionicons/ionicons.dart'; // Icônes Ionicons
+import 'package:like_button/like_button.dart'; // Widget Like animé
+import 'package:nurox_chat/models/post.dart'; // Modèle de Post
+import 'package:nurox_chat/models/user.dart'; // Modèle User
+import 'package:nurox_chat/utils/firebase.dart'; // Références Firebase (auth, collections...)
+import 'package:nurox_chat/widgets/indicators.dart'; // Widgets personnalisés d'indicateurs (non utilisé ici)
+import 'package:timeago/timeago.dart' as timeago; // Pour afficher le temps relatif (ex: "2h ago")
 
+// Écran pour visualiser une image d'un post
 class ViewImage extends StatefulWidget {
-  final PostModel? post;
+  final PostModel? post; // Post à afficher
 
-  ViewImage({this.post});
+  ViewImage({this.post}); // Constructeur
 
   @override
   _ViewImageState createState() => _ViewImageState();
 }
 
+// Timestamp courant
 final DateTime timestamp = DateTime.now();
 
+// Fonction utilitaire pour récupérer l'ID de l'utilisateur courant
 currentUserId() {
   return firebaseAuth.currentUser!.uid;
 }
 
+// Variable globale pour stocker un utilisateur
 UserModel? user;
 
 class _ViewImageState extends State<ViewImage> {
   @override
   Widget build(BuildContext context) {
-    print("i am here now");
+    print("i am here now"); // Log pour le debug
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(), // Barre d'application vide
       body: SafeArea(
         child: Column(
           children: [
+            // Image principale
             Expanded(
               child: Center(
-                child: buildImage(context),
+                child: buildImage(context), // Fonction qui construit le widget Image
               ),
             ),
+            // Section utilisateur et like
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18.0),
               child: SizedBox(
@@ -51,24 +57,26 @@ class _ViewImageState extends State<ViewImage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Nom d'utilisateur
                         Text(
                           widget.post!.username!,
                           style: const TextStyle(fontWeight: FontWeight.w800),
                         ),
                         const SizedBox(height: 3.0),
+                        // Timestamp du post
                         Row(
                           children: [
                             const Icon(Ionicons.alarm_outline, size: 13.0),
                             const SizedBox(width: 3.0),
                             Text(
-                              timeago.format(widget.post!.timestamp!.toDate()),
+                              timeago.format(widget.post!.timestamp!.toDate()), // Affiche le temps relatif
                             ),
                           ],
                         ),
                       ],
                     ),
-                    const Spacer(),
-                    buildLikeButton(),
+                    const Spacer(), // Espace entre l'info utilisateur et le bouton like
+                    buildLikeButton(), // Bouton like animé
                   ],
                 ),
               ),
@@ -79,26 +87,31 @@ class _ViewImageState extends State<ViewImage> {
     );
   }
 
+  // Widget pour afficher l'image du post
   buildImage(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: ClipRRect(
-          borderRadius: BorderRadius.circular(5.0),
+          borderRadius: BorderRadius.circular(5.0), // Coins arrondis
           child: Image.asset(
-            widget.post!.mediaUrl!,
+            widget.post!.mediaUrl!, // Image locale (si URL distante, utiliser Image.network)
             height: 400.0,
             fit: BoxFit.cover,
-            width: MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width, // Largeur de l'écran
           )),
     );
   }
 
+  // Ajouter une notification "like" si l'utilisateur n'est pas le propriétaire du post
   addLikesToNotification() async {
     bool isNotMe = currentUserId() != widget.post!.ownerId;
 
     if (isNotMe) {
+      // Récupérer les infos de l'utilisateur courant
       DocumentSnapshot doc = await usersRef.doc(currentUserId()).get();
       user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
+
+      // Ajouter une notification dans la sous-collection de l'utilisateur propriétaire
       notificationRef
           .doc(widget.post!.ownerId)
           .collection('notifications')
@@ -115,12 +128,15 @@ class _ViewImageState extends State<ViewImage> {
     }
   }
 
+  // Supprimer une notification "like" si l'utilisateur n'est pas le propriétaire
   removeLikeFromNotification() async {
     bool isNotMe = currentUserId() != widget.post!.ownerId;
 
     if (isNotMe) {
       DocumentSnapshot doc = await usersRef.doc(currentUserId()).get();
       user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
+
+      // Supprime la notification existante
       notificationRef
           .doc(widget.post!.ownerId)
           .collection('notifications')
@@ -132,8 +148,10 @@ class _ViewImageState extends State<ViewImage> {
     }
   }
 
+  // Widget pour le bouton Like animé
   buildLikeButton() {
     return StreamBuilder(
+      // Stream pour vérifier si l'utilisateur a déjà liké le post
       stream: likesRef
           .where('postId', isEqualTo: widget.post!.postId)
           .where('userId', isEqualTo: currentUserId())
@@ -141,32 +159,11 @@ class _ViewImageState extends State<ViewImage> {
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData) {
           List<QueryDocumentSnapshot> docs = snapshot.data?.docs ?? [];
-          // return IconButton(
-          //   onPressed: () {
-          //     if (docs.isEmpty) {
-          //       likesRef.add({
-          //         'userId': currentUserId(),
-          //         'postId': widget.post!.postId,
-          //         'dateCreated': Timestamp.now(),
-          //       });
-          //       addLikesToNotification();
-          //     } else {
-          //       likesRef.doc(docs[0].id).delete();
-          //       removeLikeFromNotification();
-          //     }
-          //   },
-          //   icon: docs.isEmpty
-          //       ? Icon(
-          //           CupertinoIcons.heart,
-          //         )
-          //       : Icon(
-          //           CupertinoIcons.heart_fill,
-          //           color: Colors.red,
-          //         ),
-          // );
-          ///added animated like button
+
+          // Fonction appelée lors du tap sur le bouton Like
           Future<bool> onLikeButtonTapped(bool isLiked) async {
             if (docs.isEmpty) {
+              // Ajouter un like
               likesRef.add({
                 'userId': currentUserId(),
                 'postId': widget.post!.postId,
@@ -175,17 +172,19 @@ class _ViewImageState extends State<ViewImage> {
               addLikesToNotification();
               return !isLiked;
             } else {
+              // Supprimer le like
               likesRef.doc(docs[0].id).delete();
               removeLikeFromNotification();
               return isLiked;
             }
           }
 
+          // Widget LikeButton animé
           return LikeButton(
             onTap: onLikeButtonTapped,
             size: 25.0,
             circleColor:
-                CircleColor(start: Color(0xffFFC0CB), end: Color(0xffff0000)),
+                CircleColor(start: Color(0xffFFC0CB), end: Color(0xffff0000)), // Couleur animation cercle
             bubblesColor: BubblesColor(
               dotPrimaryColor: Color(0xffFFA500),
               dotSecondaryColor: Color(0xffd8392b),
@@ -193,6 +192,7 @@ class _ViewImageState extends State<ViewImage> {
               dotLastColor: Color(0xffff8c00),
             ),
             likeBuilder: (bool isLiked) {
+              // Icône du bouton selon l'état Like
               return Icon(
                 docs.isEmpty ? Ionicons.heart_outline : Ionicons.heart,
                 color: docs.isEmpty ? Colors.grey : Colors.red,
@@ -201,7 +201,7 @@ class _ViewImageState extends State<ViewImage> {
             },
           );
         }
-        return Container();
+        return Container(); // Retourne un container vide si le snapshot n'a pas encore de données
       },
     );
   }

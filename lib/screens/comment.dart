@@ -12,6 +12,8 @@ import 'package:nurox_chat/utils/firebase.dart';
 // import 'package:nurox_chat/widgets/cached_image.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+/// Écran d'affichage des commentaires d'un post
+/// Permet de voir les commentaires existants et d'en ajouter de nouveaux
 class Comments extends StatefulWidget {
   final PostModel? post;
 
@@ -27,10 +29,24 @@ class _CommentsState extends State<Comments> {
   final DateTime timestamp = DateTime.now();
   TextEditingController commentsTEC = TextEditingController();
 
+  /// Retourne l'UID de l'utilisateur connecté
   currentUserId() {
     return firebaseAuth.currentUser!.uid;
   }
 
+  /// Construit l'interface principale de l'écran des commentaires
+  /// 
+  /// AFFICHAGE :
+  /// - AppBar avec icône X pour fermer et titre "Comments"
+  /// - Zone scrollable contenant :
+  ///   * Le post complet (image + description + likes)
+  ///   * Divider (séparateur) de 1.5px
+  ///   * Liste des commentaires en temps réel
+  /// - Champ de saisie fixe en bas de l'écran avec bouton d'envoi
+  /// 
+  /// STRUCTURE :
+  /// - Hauteur totale = hauteur de l'écran
+  /// - Column avec Flexible pour la liste et Align pour le champ de saisie
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,6 +66,7 @@ class _CommentsState extends State<Comments> {
         height: MediaQuery.of(context).size.height,
         child: Column(
           children: [
+            /// Zone scrollable : Post + Commentaires
             Flexible(
               child: ListView(
                 children: [
@@ -64,6 +81,12 @@ class _CommentsState extends State<Comments> {
                 ],
               ),
             ),
+            /// Zone fixe en bas : Champ de saisie du commentaire
+            /// AFFICHAGE :
+            /// - Padding de 20px tout autour
+            /// - Hauteur max de 190px
+            /// - TextField avec bordures arrondies (5px)
+            /// - Icône send pour envoyer le commentaire
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
@@ -127,6 +150,8 @@ class _CommentsState extends State<Comments> {
                             ),
                             maxLines: null,
                           ),
+                          /// Bouton d'envoi du commentaire
+                          /// COMPORTEMENT : Upload le commentaire puis vide le champ
                           trailing: GestureDetector(
                             onTap: () async {
                               await services.uploadComment(
@@ -159,12 +184,26 @@ class _CommentsState extends State<Comments> {
     );
   }
 
+  /// Construit l'affichage complet du post
+  /// 
+  /// AFFICHAGE :
+  /// - Image du post : 350px de hauteur, largeur = écran - 20px
+  /// - Description en gras
+  /// - Timeago (ex: "il y a 2 heures")
+  /// - Nombre de likes en temps réel (StreamBuilder)
+  /// - Bouton like animé à droite
+  /// 
+  /// DISPOSITION :
+  /// - Column avec image en haut
+  /// - Row en bas avec infos à gauche et bouton like à droite
   buildFullPost() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        /// Image du post
+        /// AFFICHAGE : 350px de haut, largeur adaptative
         Container(
           height: 350.0,
           width: MediaQuery.of(context).size.width - 20.0,
@@ -178,6 +217,8 @@ class _CommentsState extends State<Comments> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  /// Description du post
+                  /// AFFICHAGE : Texte en gras (w800)
                   Text(
                     widget.post!.description!,
                     style: TextStyle(
@@ -187,11 +228,15 @@ class _CommentsState extends State<Comments> {
                   SizedBox(height: 4.0),
                   Row(
                     children: [
+                      /// Timeago (temps écoulé)
+                      /// AFFICHAGE : Format relatif (ex: "2 hours ago")
                       Text(
                         timeago.format(widget.post!.timestamp!.toDate()),
                         style: TextStyle(),
                       ),
                       SizedBox(width: 3.0),
+                      /// Nombre de likes en temps réel
+                      /// COMPORTEMENT : Écoute les changements via StreamBuilder
                       StreamBuilder(
                         stream: likesRef
                             .where('postId', isEqualTo: widget.post!.postId)
@@ -220,10 +265,23 @@ class _CommentsState extends State<Comments> {
     );
   }
 
+  /// Construit la liste des commentaires en temps réel
+  /// 
+  /// AFFICHAGE :
+  /// - Liste scrollable avec StreamBuilder
+  /// - Chaque commentaire affiche :
+  ///   * Avatar circulaire (40px de diamètre)
+  ///   * Username en gras (14px)
+  ///   * Timeago en petit (10px)
+  ///   * Texte du commentaire avec padding gauche de 60px
+  /// 
+  /// COMPORTEMENT :
+  /// - Tri par timestamp décroissant (plus récents en premier)
+  /// - Mise à jour automatique via stream Firestore
+  /// - Scroll désactivé (NeverScrollableScrollPhysics) car dans un ListView parent
   buildComments() {
     return CommentsStreamWrapper(
       shrinkWrap: true,
-      // padding: const EdgeInsets.symmetric(horizontal: 20.0),
       stream: commentRef
           .doc(widget.post!.postId)
           .collection('comments')
@@ -243,6 +301,8 @@ class _CommentsState extends State<Comments> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  /// Avatar de l'auteur du commentaire
+                  /// AFFICHAGE : Cercle de 40px (radius 20px)
                   CircleAvatar(
                     radius: 20.0,
                     backgroundImage: AssetImage(comments.userDp!),
@@ -253,6 +313,8 @@ class _CommentsState extends State<Comments> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      /// Nom d'utilisateur
+                      /// AFFICHAGE : Texte en gras, taille 14px
                       Text(
                         comments.username!,
                         style: TextStyle(
@@ -260,6 +322,8 @@ class _CommentsState extends State<Comments> {
                           fontSize: 14.0,
                         ),
                       ),
+                      /// Temps écoulé depuis le commentaire
+                      /// AFFICHAGE : Petit texte gris, taille 10px
                       Text(
                         timeago.format(comments.timestamp!.toDate()),
                         style: TextStyle(fontSize: 10.0),
@@ -268,6 +332,8 @@ class _CommentsState extends State<Comments> {
                   )
                 ],
               ),
+              /// Texte du commentaire
+              /// AFFICHAGE : Padding gauche de 60px pour alignement avec username
               Padding(
                 padding: const EdgeInsets.only(left: 60.0),
                 child: Text(comments.comment!.trim()),
@@ -280,6 +346,20 @@ class _CommentsState extends State<Comments> {
     );
   }
 
+  /// Construit le bouton like animé avec état en temps réel
+  /// 
+  /// AFFICHAGE :
+  /// - Bouton like animé (25px)
+  /// - Icône vide (heart_outline) si pas liké, couleur grise
+  /// - Icône pleine (heart) si liké, couleur rouge
+  /// - Animation de bulles colorées lors du like
+  /// - Animation circulaire rose à rouge
+  /// 
+  /// COMPORTEMENT :
+  /// - StreamBuilder écoute l'état du like en temps réel
+  /// - onTap : Ajoute/retire le like de Firestore
+  /// - Ajoute/retire la notification au propriétaire du post
+  /// - Retourne l'état inversé pour l'animation
   buildLikeButton() {
     return StreamBuilder(
       stream: likesRef
@@ -289,31 +369,11 @@ class _CommentsState extends State<Comments> {
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData) {
           List<QueryDocumentSnapshot> docs = snapshot.data?.docs ?? [];
-          // return IconButton(
-          //   onPressed: () {
-          //     if (docs.isEmpty) {
-          //       likesRef.add({
-          //         'userId': currentUserId(),
-          //         'postId': widget.post!.postId,
-          //         'dateCreated': Timestamp.now(),
-          //       });
-          //       addLikesToNotification();
-          //     } else {
-          //       likesRef.doc(docs[0].id).delete();
-          //
-          //       removeLikeFromNotification();
-          //     }
-          //   },
-          //   icon: docs.isEmpty
-          //       ? Icon(
-          //           CupertinoIcons.heart,
-          //         )
-          //       : Icon(
-          //           CupertinoIcons.heart_fill,
-          //           color: Colors.red,
-          //         ),
-          // );
-          ///added animated like button
+          
+          /// Gestion du tap sur le bouton like
+          /// COMPORTEMENT :
+          /// - Si pas liké : Ajoute dans Firestore + notification
+          /// - Si déjà liké : Supprime de Firestore + notification
           Future<bool> onLikeButtonTapped(bool isLiked) async {
             if (docs.isEmpty) {
               likesRef.add({
@@ -330,6 +390,11 @@ class _CommentsState extends State<Comments> {
             }
           }
 
+          /// Bouton like avec animations
+          /// AFFICHAGE :
+          /// - Taille : 25px
+          /// - Couleurs bulles : Orange, rouge, rose, orange foncé
+          /// - Couleur cercle : Rose à rouge
           return LikeButton(
             onTap: onLikeButtonTapped,
             size: 25.0,
@@ -354,6 +419,12 @@ class _CommentsState extends State<Comments> {
     );
   }
 
+  /// Affiche le nombre de likes
+  /// 
+  /// AFFICHAGE :
+  /// - Texte en gras, taille 10px
+  /// - Padding gauche de 7px
+  /// - Format : "X likes"
   buildLikesCount(BuildContext context, int count) {
     return Padding(
       padding: const EdgeInsets.only(left: 7.0),
@@ -367,6 +438,16 @@ class _CommentsState extends State<Comments> {
     );
   }
 
+  /// Ajoute une notification de like au propriétaire du post
+  /// 
+  /// COMPORTEMENT :
+  /// - Vérifie que l'utilisateur qui like n'est pas le propriétaire
+  /// - Récupère les infos de l'utilisateur qui like
+  /// - Crée une notification dans Firestore avec :
+  ///   * Type : "like"
+  ///   * Username, userId, photo de profil
+  ///   * PostId et mediaUrl du post
+  ///   * Timestamp actuel
   addLikesToNotification() async {
     bool isNotMe = currentUserId() != widget.post!.ownerId;
 
@@ -389,6 +470,13 @@ class _CommentsState extends State<Comments> {
     }
   }
 
+  /// Supprime la notification de like du propriétaire du post
+  /// 
+  /// COMPORTEMENT :
+  /// - Vérifie que l'utilisateur qui unlike n'est pas le propriétaire
+  /// - Récupère les infos de l'utilisateur
+  /// - Supprime la notification correspondante de Firestore
+  /// - Vérifie l'existence du document avant suppression
   removeLikeFromNotification() async {
     bool isNotMe = currentUserId() != widget.post!.ownerId;
 
