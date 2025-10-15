@@ -1,6 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart'; 
-import 'package:flutter/material.dart'; 
-import 'package:nurox_chat/widgets/indicators.dart'; 
+import 'package:cloud_firestore/cloud_firestore.dart'; // Importe Firestore pour accéder aux données en temps réel
+import 'package:flutter/material.dart'; // Importe Flutter pour construire l’interface utilisateur
+import 'package:nurox_chat/widgets/indicators.dart'; // Importe les indicateurs de chargement personnalisés
 
 // Type de fonction pour construire un widget à partir d'un DocumentSnapshot
 typedef ItemBuilder<T> = Widget Function(
@@ -10,10 +10,14 @@ typedef ItemBuilder<T> = Widget Function(
 
 // Widget générique pour afficher un flux de commentaires à partir d'un Stream Firestore
 class CommentsStreamWrapper extends StatelessWidget {
-  final Stream<QuerySnapshot<Object?>>? stream; // Stream de commentaires provenant de Firestore
-  final ItemBuilder<DocumentSnapshot> itemBuilder; // Fonction pour construire un widget pour chaque commentaire
-  final Axis scrollDirection; // Direction de défilement (vertical ou horizontal)
-  final bool shrinkWrap; // Si vrai, la ListView prend seulement la place nécessaire
+  final Stream<QuerySnapshot<Object?>>?
+      stream; // Stream de commentaires provenant de Firestore
+  final ItemBuilder<DocumentSnapshot>
+      itemBuilder; // Fonction pour construire un widget pour chaque commentaire
+  final Axis
+      scrollDirection; // Direction de défilement (vertical ou horizontal)
+  final bool
+      shrinkWrap; // Si vrai, la ListView prend seulement la place nécessaire
   final ScrollPhysics physics; // Physique de défilement
   final EdgeInsets padding; // Padding autour de la ListView
 
@@ -43,8 +47,10 @@ class CommentsStreamWrapper extends StatelessWidget {
               ? Container(
                   child: Center(
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: Text('No comments'), // Message "pas de commentaires"
+                      padding: const EdgeInsets.only(
+                          top: 20.0), // Ajoute un espacement en haut
+                      child:
+                          Text('No comments'), // Message "pas de commentaires"
                     ),
                   ),
                 )
@@ -52,22 +58,26 @@ class CommentsStreamWrapper extends StatelessWidget {
                   // Séparateur entre chaque commentaire
                   separatorBuilder: (BuildContext context, int index) {
                     return Align(
-                      alignment: Alignment.centerRight,
+                      alignment:
+                          Alignment.centerRight, // Alignement du séparateur
                       child: Container(
-                        height: 0.5,
-                        width: MediaQuery.of(context).size.width / 1.3,
+                        height: 0.5, // Hauteur du séparateur
+                        width: MediaQuery.of(context).size.width /
+                            1.3, // Largeur du séparateur
                         child: const Divider(), // Ligne séparatrice fine
                       ),
                     );
                   },
-                  reverse: true, // Les commentaires les plus récents en haut
+                  reverse:
+                      true, // Les commentaires les plus récents apparaissent en haut
                   padding: padding, // Padding autour de la ListView
                   scrollDirection: scrollDirection, // Direction de défilement
                   itemCount: list.length, // Nombre de commentaires
                   shrinkWrap: shrinkWrap, // Ajuste la taille si nécessaire
                   physics: physics, // Physique de défilement
                   itemBuilder: (BuildContext context, int index) {
-                    return itemBuilder(context, list[index]); // Construire chaque widget commentaire
+                    return itemBuilder(context,
+                        list[index]); // Construire chaque widget commentaire
                   },
                 );
         } else {
