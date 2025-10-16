@@ -1,13 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-//Convertir un JSON vers une Class avec des attributs
+//  représente un commentaire dans Firestore
 class CommentModel {
-  String? username;
-  String? comment;
-  Timestamp? timestamp;
-  String? userDp;
-  String? userId;
+  // Attributs
+  String? username; // Nom de l’utilisateur qui a commenté
+  String? comment; // Contenu du commentaire
+  Timestamp? timestamp; // Date et heure du commentaire (Firestore Timestamp)
+  String? userDp; // URL ou chemin de la photo de profil de l’utilisateur
+  String? userId; // Identifiant unique de l’utilisateur
 
+  // Constructeur
   CommentModel({
     this.username,
     this.comment,
@@ -16,6 +18,7 @@ class CommentModel {
     this.userId,
   });
 
+  //  Constructeur nommé : crée un objet à partir d’un JSON Firestore
   CommentModel.fromJson(Map<String, dynamic> json) {
     username = json['username'];
     comment = json['comment'];
@@ -24,13 +27,14 @@ class CommentModel {
     userId = json['userId'];
   }
 
+  // Méthode de conversion : transforme un objet en JSON pour Firestore
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['username'] = this.username;
-    data['comment'] = this.comment;
-    data['timestamp'] = this.timestamp;
-    data['userDp'] = this.userDp;
-    data['userId'] = this.userId;
+    final Map<String, dynamic> data = {};
+    data['username'] = username;
+    data['comment'] = comment;
+    data['timestamp'] = timestamp;
+    data['userDp'] = userDp;
+    data['userId'] = userId;
     return data;
   }
 }

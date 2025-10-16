@@ -1,20 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nurox_chat/models/enum/message_type.dart';
 
-//Convertir un JSON vers une Class avec des attributs
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+//  Classe Message : représente un message échangé entre deux utilisateurs
 class Message {
-  String? content;
-  String? senderUid;
-  String? messageId;
-  MessageType? type;
-  Timestamp? time;
+  //  Attributs
+  String? content; // Contenu du message (texte ou URL d’image)
+  String? senderUid; // Identifiant unique de l’expéditeur
+  String? messageId; // Identifiant unique du message
+  MessageType? type; // Type du message : texte ou image
+  Timestamp? time; // Date et heure d’envoi du message (Firestore Timestamp)
 
-  Message({this.content, this.senderUid, this.messageId, this.type, this.time});
+  //  Constructeur
+  Message({
+    this.content,
+    this.senderUid,
+    this.messageId,
+    this.type,
+    this.time,
+  });
 
+  //  Constructeur nommé : créer un objet Message à partir d’un JSON Firestore
   Message.fromJson(Map<String, dynamic> json) {
     content = json['content'];
     senderUid = json['senderUid'];
     messageId = json['messageId'];
+    // Déterminer le type du message à partir du texte stocké
     if (json['type'] == 'text') {
       type = MessageType.TEXT;
     } else {
@@ -23,17 +35,16 @@ class Message {
     time = json['time'];
   }
 
+  //  Méthode toJson() : convertir l’objet Message en JSON pour l’enregistrer dans Firestore
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['content'] = this.content;
-    data['senderUid'] = this.senderUid;
-    data['messageId'] = this.messageId;
-    if (this.type == MessageType.TEXT) {
-      data['type'] = 'text';
-    } else {
-      data['type'] = 'image';
-    }
-    data['time'] = this.time;
+    final Map<String, dynamic> data = {};
+    data['content'] = content;
+    data['senderUid'] = senderUid;
+    data['messageId'] = messageId;
+    data['type'] = (type == MessageType.TEXT) ? 'text' : 'image';
+    data['time'] = time;
     return data;
   }
 }
+
+
