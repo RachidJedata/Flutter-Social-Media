@@ -25,7 +25,7 @@ class PostService extends Service {
   uploadPost(String location, String description, File? image) async {
     String link = Constants.defaultImage;
 
-    if (image != null) link = await uploadImage(posts, image);
+    // if (image != null) link = await uploadImage(posts, image);
 
     DocumentSnapshot doc =
         await usersRef.doc(firebaseAuth.currentUser!.uid).get();

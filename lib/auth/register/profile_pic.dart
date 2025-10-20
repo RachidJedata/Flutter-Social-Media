@@ -111,7 +111,9 @@ class _ProfilePictureState extends State<ProfilePicture> {
                       child: Text('done'.toUpperCase()),
                     ),
                   ),
-                  onPressed: () => viewModel.uploadProfilePicture(context),
+                  // onPressed: () => viewModel.uploadProfilePicture(context),
+                  onPressed: () => Navigator.of(context).pushReplacement(
+                      CupertinoPageRoute(builder: (_) => TabScreen())),
                 ),
               ),
             ],
