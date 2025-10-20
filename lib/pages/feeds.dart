@@ -1,35 +1,45 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:ionicons/ionicons.dart';
-import 'package:nurox_chat/chats/recent_chats.dart';
-import 'package:nurox_chat/models/post.dart';
-import 'package:nurox_chat/screens/view_image.dart';
-import 'package:nurox_chat/services/chat_service.dart';
-import 'package:nurox_chat/utils/constants.dart';
-import 'package:nurox_chat/utils/firebase.dart';
-import 'package:nurox_chat/widgets/indicators.dart';
-import 'package:nurox_chat/widgets/story_widget.dart';
-import 'package:nurox_chat/widgets/userpost.dart';
+// Importation des bibliothèques nécessaires
+import 'package:cloud_firestore/cloud_firestore.dart'; // Permet d'interagir avec la base de données Firestore
+import 'package:flutter/material.dart'; // Bibliothèque principale pour construire l'interface utilisateur Flutter
+import 'package:flutter/cupertino.dart'; // Fournit des widgets de style iOS
+import 'package:ionicons/ionicons.dart'; // Fournit des icônes supplémentaires pour l’interface
+import 'package:nurox_chat/chats/recent_chats.dart'; // Écran affichant la liste des discussions récentes
+import 'package:nurox_chat/models/post.dart'; // Modèle de données représentant un post
+import 'package:nurox_chat/screens/view_image.dart'; // Écran permettant de visualiser une image
+import 'package:nurox_chat/services/chat_service.dart'; // Service responsable de la gestion des discussions et messages
+import 'package:nurox_chat/utils/constants.dart'; // Fichier contenant des constantes utilisées dans toute l’application
+import 'package:nurox_chat/utils/firebase.dart'; // Fichier gérant la connexion et les références Firebase
+import 'package:nurox_chat/widgets/indicators.dart'; // Contient les indicateurs de chargement personnalisés
+import 'package:nurox_chat/widgets/story_widget.dart'; // Widget pour afficher les stories
+import 'package:nurox_chat/widgets/userpost.dart'; // Widget pour afficher un post utilisateur
 
+// Widget principal représentant le flux d'actualités (posts + stories)
 class Feeds extends StatefulWidget {
   @override
   _FeedsState createState() => _FeedsState();
 }
 
 class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
+  // Clé globale pour gérer l'état du Scaffold
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
+  // Nombre de posts chargés à la fois
   int page = 5;
+
+  // Indicateur de chargement lors du défilement
   bool loadingMore = false;
+
+  // Contrôleur de défilement pour détecter quand l’utilisateur atteint la fin de la liste
   ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
+    // Ajout d’un écouteur pour le défilement afin de charger plus de posts automatiquement
     scrollController.addListener(() async {
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
         setState(() {
+          // Augmente le nombre de posts à charger
           page = page + 5;
           loadingMore = true;
         });
@@ -41,76 +51,93 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    // print('>>>');
+
+    // Construction du Scaffold principal
     return Scaffold(
       key: scaffoldKey,
+
+      // Barre d'application (AppBar)
       appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Text(
-            Constants.appName,
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-            ),
+        automaticallyImplyLeading:
+            false, // Supprime le bouton de retour automatique
+        title: Text(
+          Constants.appName, // Affiche le nom de l’application
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
           ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Icon(
-                    Ionicons.chatbubble_ellipses,
-                    color: Theme.of(context).primaryColor,
-                    size: 30.0,
-                  ),
-                  StreamBuilder<int>(
-                    stream: ChatService()
-                        .getNumberOfUnreadMessages(currentUserId()),
-                    builder: (context, AsyncSnapshot<int?> snapshot) {
-                      final int messagesCount = snapshot.data ?? 0;
-                      print('messagesCount $messagesCount');
+        ),
+        centerTitle: true, // Centre le titre de l’AppBar
+        actions: [
+          // Bouton pour accéder aux messages
+          IconButton(
+            icon: Stack(
+              alignment: Alignment.center,
+              children: [
+                Icon(
+                  Ionicons.chatbubble_ellipses, // Icône de messagerie
+                  color: Theme.of(context).primaryColor,
+                  size: 30.0,
+                ),
 
-                      if (messagesCount == 0) {
-                        return const SizedBox();
-                      }
+                // StreamBuilder pour écouter en temps réel le nombre de messages non lus
+                StreamBuilder<int>(
+                  stream:
+                      ChatService().getNumberOfUnreadMessages(currentUserId()),
+                  builder: (context, AsyncSnapshot<int?> snapshot) {
+                    final int messagesCount = snapshot.data ?? 0;
+                    print('messagesCount $messagesCount');
 
-                      return Positioned(
-                        right: -1,
-                        top: -4,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Text(
-                            messagesCount > 99 ? '99+' : '$messagesCount',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
+                    // Si aucun message non lu, on n’affiche rien
+                    if (messagesCount == 0) {
+                      return const SizedBox();
+                    }
+
+                    // Affiche un badge rouge avec le nombre de messages non lus
+                    return Positioned(
+                      right: -1,
+                      top: -4,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          messagesCount > 99 ? '99+' : '$messagesCount',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
                           ),
                         ),
-                      );
-                    },
-                  )
-                ],
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                    builder: (_) => Chats(),
-                  ),
-                );
-              },
+                      ),
+                    );
+                  },
+                )
+              ],
             ),
-            const SizedBox(width: 20.0),
-          ]),
+            onPressed: () {
+              // Navigation vers l’écran des discussions
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                  builder: (_) => Chats(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 20.0),
+        ],
+      ),
+
+      // Corps principal du Scaffold
       body: RefreshIndicator(
         color: Theme.of(context).colorScheme.secondary,
+
+        // Fonction de rafraîchissement manuel du flux
         onRefresh: () =>
             postRef.orderBy('timestamp', descending: true).limit(page).get(),
+
+        // Utilisation de FutureBuilder pour charger les posts
         child: FutureBuilder(
           future:
               postRef.orderBy('timestamp', descending: true).limit(page).get(),
@@ -119,38 +146,39 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
               var snap = snapshot.data;
               List docs = snap!.docs;
 
-              // *** This is the MAIN scrollable widget. ***
+              // Liste principale défilante contenant les stories et les posts
               return ListView.builder(
-                // Use the scrollController here for infinite scrolling logic
-                controller: scrollController,
-
-                // Add 1 for the StoryWidget at the top
-                itemCount: docs.length + 1,
-
+                controller: scrollController, // Contrôle le défilement
+                itemCount: docs.length + 1, // +1 pour le StoryWidget au début
                 itemBuilder: (context, index) {
-                  // *** Handle the StoryWidget at index 0 ***
+                  // Si c’est le premier élément, on affiche les stories
                   if (index == 0) {
                     return StoryWidget();
                   }
 
-                  // *** Handle the Posts for index > 0 ***
-                  int postIndex =
-                      index - 1; // Adjust index for the list of posts
+                  // Pour tous les autres éléments, on affiche les posts
+                  int postIndex = index - 1;
                   PostModel posts = PostModel.fromJson(docs[postIndex].data());
 
                   return Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: UserPost(post: posts),
+                    child: UserPost(
+                        post: posts), // Affichage d’un post utilisateur
                   );
                 },
               );
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              // Show loading indicator in the center while waiting
+            }
+
+            // Si les données sont en cours de chargement, affiche un indicateur circulaire
+            else if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: circularProgress(context));
-            } else {
+            }
+
+            // Si aucune donnée n’est trouvée
+            else {
               return Center(
                 child: Text(
-                  'No Feeds',
+                  'No Feeds', // Message lorsqu’il n’y a pas de posts
                   style: TextStyle(
                     fontSize: 26.0,
                     fontWeight: FontWeight.bold,
@@ -164,6 +192,7 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
     );
   }
 
+  // Assure que l’état du widget est conservé lorsque l’utilisateur change d’onglet
   @override
   bool get wantKeepAlive => true;
 }
