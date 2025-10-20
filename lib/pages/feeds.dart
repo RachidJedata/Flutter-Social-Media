@@ -158,12 +158,12 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
 
                   // Pour tous les autres éléments, on affiche les posts
                   int postIndex = index - 1;
-                  PostModel posts = PostModel.fromJson(docs[postIndex].data());
+                  PostModel post = PostModel.fromJson(docs[postIndex].data());
 
                   return Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: UserPost(
-                        post: posts), // Affichage d’un post utilisateur
+                        post: post), // Affichage d’un post utilisateur
                   );
                 },
               );

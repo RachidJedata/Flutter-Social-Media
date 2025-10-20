@@ -75,12 +75,6 @@ class ChatService {
         // Get the current user's last read message count.
         final int readCount = (reads[currentUserId] as int?) ?? 0;
 
-        // 3. ASYNCHRONOUSLY fetch the actual total number of messages in the subcollection.
-        // We use .limit(1) and .get() to optimize fetching the COUNT, not all messages.
-        // Note: Getting the full collection size is inefficient;
-        // Firestore has no direct 'COUNT' function (though it's coming soon).
-        // The most common workaround is this:
-
         final messagesQuery = await chatRef
             .doc(chatId)
             .collection('messages')

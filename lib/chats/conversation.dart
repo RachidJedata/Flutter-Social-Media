@@ -80,7 +80,6 @@ class _ConversationState extends State<Conversation> {
     super.dispose();
   }
 
-  // FIX 1: Corrected setTyping to use the local, resolved 'chatId'
   setTyping(bool typing) {
     // Only proceed if mounted AND chatId is resolved (i.e., not null)
     if (!mounted || chatId == null) return;
@@ -95,10 +94,8 @@ class _ConversationState extends State<Conversation> {
     }
   }
 
-  // FIX 2: Corrected sendMessage logic
   sendMessage(ConversationViewModel viewModel, UserModel? user,
       {bool isImage = false, int? imageType}) async {
-    // Crucial null check for the sender
     if (user == null) {
       print('Sender user is null, cannot send message.');
       return;
@@ -194,7 +191,7 @@ class _ConversationState extends State<Conversation> {
             children: [
               Flexible(
                 child: StreamBuilder<QuerySnapshot>(
-                  // FIX 5: Use the resolved chatId for the stream
+                  // Use the resolved chatId for the stream
                   stream: (chatId != null) ? messageListStream(chatId!) : null,
                   builder: (context, snapshot) {
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {

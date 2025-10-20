@@ -8,7 +8,6 @@ import 'package:nurox_chat/view_models/profile/edit_profile_view_model.dart';
 import 'package:nurox_chat/view_models/status/status_view_model.dart';
 import 'package:nurox_chat/view_models/theme/theme_view_model.dart';
 import 'package:nurox_chat/view_models/user/user_view_model.dart';
-// import 'package:nurox_chat/utils/constants.dart';
 
 List<SingleChildWidget> providers = [
   ChangeNotifierProvider(create: (_) => RegisterViewModel()),
@@ -19,4 +18,4 @@ List<SingleChildWidget> providers = [
   ChangeNotifierProvider(create: (_) => StatusViewModel()),
   ChangeNotifierProvider(create: (_) => UserViewModel()),
   ChangeNotifierProvider(create: (_) => ThemeProvider()),
-];
+];//Change Notifiers

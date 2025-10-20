@@ -41,7 +41,7 @@ class ConversationViewModel extends ChangeNotifier {
     chatService.setUserTyping(chatId, user, typing);
   }
 
-  // ✅ CORRECTED: Changed the return type to Future<String?>
+  // Changed the return type to Future<String?>
   // and updated image picker usage.
   Future<String?> pickImage(
       {int? source, BuildContext? context, String? chatId}) async {
