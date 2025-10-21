@@ -35,7 +35,7 @@ class _CommentsState extends State<Comments> {
   }
 
   /// Construit l'interface principale de l'écran des commentaires
-  /// 
+  ///
   /// AFFICHAGE :
   /// - AppBar avec icône X pour fermer et titre "Comments"
   /// - Zone scrollable contenant :
@@ -43,7 +43,7 @@ class _CommentsState extends State<Comments> {
   ///   * Divider (séparateur) de 1.5px
   ///   * Liste des commentaires en temps réel
   /// - Champ de saisie fixe en bas de l'écran avec bouton d'envoi
-  /// 
+  ///
   /// STRUCTURE :
   /// - Hauteur totale = hauteur de l'écran
   /// - Column avec Flexible pour la liste et Align pour le champ de saisie
@@ -75,12 +75,11 @@ class _CommentsState extends State<Comments> {
                     child: buildFullPost(),
                   ),
                   Divider(thickness: 1.5),
-                  Flexible(
-                    child: buildComments(),
-                  )
+                  buildComments()
                 ],
               ),
             ),
+
             /// Zone fixe en bas : Champ de saisie du commentaire
             /// AFFICHAGE :
             /// - Padding de 20px tout autour
@@ -150,6 +149,7 @@ class _CommentsState extends State<Comments> {
                             ),
                             maxLines: null,
                           ),
+
                           /// Bouton d'envoi du commentaire
                           /// COMPORTEMENT : Upload le commentaire puis vide le champ
                           trailing: GestureDetector(
@@ -185,14 +185,14 @@ class _CommentsState extends State<Comments> {
   }
 
   /// Construit l'affichage complet du post
-  /// 
+  ///
   /// AFFICHAGE :
   /// - Image du post : 350px de hauteur, largeur = écran - 20px
   /// - Description en gras
   /// - Timeago (ex: "il y a 2 heures")
   /// - Nombre de likes en temps réel (StreamBuilder)
   /// - Bouton like animé à droite
-  /// 
+  ///
   /// DISPOSITION :
   /// - Column avec image en haut
   /// - Row en bas avec infos à gauche et bouton like à droite
@@ -235,6 +235,7 @@ class _CommentsState extends State<Comments> {
                         style: TextStyle(),
                       ),
                       SizedBox(width: 3.0),
+
                       /// Nombre de likes en temps réel
                       /// COMPORTEMENT : Écoute les changements via StreamBuilder
                       StreamBuilder(
@@ -266,7 +267,7 @@ class _CommentsState extends State<Comments> {
   }
 
   /// Construit la liste des commentaires en temps réel
-  /// 
+  ///
   /// AFFICHAGE :
   /// - Liste scrollable avec StreamBuilder
   /// - Chaque commentaire affiche :
@@ -274,7 +275,7 @@ class _CommentsState extends State<Comments> {
   ///   * Username en gras (14px)
   ///   * Timeago en petit (10px)
   ///   * Texte du commentaire avec padding gauche de 60px
-  /// 
+  ///
   /// COMPORTEMENT :
   /// - Tri par timestamp décroissant (plus récents en premier)
   /// - Mise à jour automatique via stream Firestore
@@ -322,6 +323,7 @@ class _CommentsState extends State<Comments> {
                           fontSize: 14.0,
                         ),
                       ),
+
                       /// Temps écoulé depuis le commentaire
                       /// AFFICHAGE : Petit texte gris, taille 10px
                       Text(
@@ -332,6 +334,7 @@ class _CommentsState extends State<Comments> {
                   )
                 ],
               ),
+
               /// Texte du commentaire
               /// AFFICHAGE : Padding gauche de 60px pour alignement avec username
               Padding(
@@ -347,14 +350,14 @@ class _CommentsState extends State<Comments> {
   }
 
   /// Construit le bouton like animé avec état en temps réel
-  /// 
+  ///
   /// AFFICHAGE :
   /// - Bouton like animé (25px)
   /// - Icône vide (heart_outline) si pas liké, couleur grise
   /// - Icône pleine (heart) si liké, couleur rouge
   /// - Animation de bulles colorées lors du like
   /// - Animation circulaire rose à rouge
-  /// 
+  ///
   /// COMPORTEMENT :
   /// - StreamBuilder écoute l'état du like en temps réel
   /// - onTap : Ajoute/retire le like de Firestore
@@ -369,7 +372,7 @@ class _CommentsState extends State<Comments> {
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData) {
           List<QueryDocumentSnapshot> docs = snapshot.data?.docs ?? [];
-          
+
           /// Gestion du tap sur le bouton like
           /// COMPORTEMENT :
           /// - Si pas liké : Ajoute dans Firestore + notification
@@ -420,7 +423,7 @@ class _CommentsState extends State<Comments> {
   }
 
   /// Affiche le nombre de likes
-  /// 
+  ///
   /// AFFICHAGE :
   /// - Texte en gras, taille 10px
   /// - Padding gauche de 7px
@@ -439,7 +442,7 @@ class _CommentsState extends State<Comments> {
   }
 
   /// Ajoute une notification de like au propriétaire du post
-  /// 
+  ///
   /// COMPORTEMENT :
   /// - Vérifie que l'utilisateur qui like n'est pas le propriétaire
   /// - Récupère les infos de l'utilisateur qui like
@@ -471,7 +474,7 @@ class _CommentsState extends State<Comments> {
   }
 
   /// Supprime la notification de like du propriétaire du post
-  /// 
+  ///
   /// COMPORTEMENT :
   /// - Vérifie que l'utilisateur qui unlike n'est pas le propriétaire
   /// - Récupère les infos de l'utilisateur
