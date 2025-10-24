@@ -26,9 +26,6 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
   // Nombre de posts chargés à la fois
   int page = 5;
 
-  // Indicateur de chargement lors du défilement
-  bool loadingMore = false;
-
   // Contrôleur de défilement pour détecter quand l’utilisateur atteint la fin de la liste
   ScrollController scrollController = ScrollController();
 
@@ -41,7 +38,6 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
         setState(() {
           // Augmente le nombre de posts à charger
           page = page + 5;
-          loadingMore = true;
         });
       }
     });

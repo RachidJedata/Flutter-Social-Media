@@ -9,7 +9,6 @@ import 'package:nurox_chat/models/post.dart';
 import 'package:nurox_chat/models/user.dart';
 import 'package:nurox_chat/services/post_service.dart';
 import 'package:nurox_chat/utils/firebase.dart';
-// import 'package:nurox_chat/widgets/cached_image.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 /// Écran d'affichage des commentaires d'un post
