@@ -1,7 +1,7 @@
-# 🔥🔥 RajaChat Social Media App  <a href="https://www.linkedin.com/in/rachid-jedata">
+# 🔥🔥 RajaChat Social Media App  
+<a href="https://www.linkedin.com/in/rachid-jedata">
   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/2048px-LinkedIn_icon.svg.png" width="32" height="32" alt="LinkedIn">
 </a>
-
 
 
 RajaChat is a fully functional social media app with multiple features built with flutter and dart.
